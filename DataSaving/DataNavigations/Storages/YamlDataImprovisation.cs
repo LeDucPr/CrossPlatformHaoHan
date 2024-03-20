@@ -16,13 +16,17 @@ namespace DataSaving.DataNavigations.Storages
 		private void CreateYamlDocument(EFirstComponentConfig efirst)
 		{
 			var newNode = new YamlScalarNode(efirst.ToString()); // YamlNode mới 
-			var newDoc = new YamlDocument(newNode);
-			this.yamlStream.Documents.Add(newDoc); //[this.yamlStream.Documents.Count()] = newDoc;
+			//var newDoc = new YamlDocument(newNode);
+			//this.yamlStream.Documents.Add(newDoc); //[this.yamlStream.Documents.Count()] = newDoc;
+			var newDoc = new YamlDocument(new YamlMappingNode { { newNode, new YamlScalarNode("") } });
+			this.yamlStream.Documents.Add(newDoc);
 		}
 		private void CreateYamlDocuments()
 		{
 			if (!File.Exists(this.yamlPath))
 			{
+				Directory.CreateDirectory(Path.GetDirectoryName(this.yamlPath)!);
+				File.Create(this.yamlPath).Close();
 				((EFirstComponentConfig[])Enum.GetValues(typeof(EFirstComponentConfig))).ToList()
 					.ForEach(efirst => this.CreateYamlDocument(efirst));
 				using (var writer = new StreamWriter(this.yamlPath)) { this.yamlStream.Save(writer); }
@@ -44,6 +48,7 @@ namespace DataSaving.DataNavigations.Storages
 				string TkeyName = obj.ObjectNameKey;
 				var targetEntry = docNode.Children
 					.FirstOrDefault(entry => ((YamlScalarNode)entry.Key).Value == TkeyName);
+				Console.WriteLine(targetEntry.Key);
 				if (targetEntry.Key != null)
 					docNode.Children[targetEntry.Key] = serializer.Serialize(obj);
 				else
@@ -57,14 +62,17 @@ namespace DataSaving.DataNavigations.Storages
 		{
 			string efirstName = efirst.ToString();
 			var findNode = new YamlScalarNode(efirstName);
-			var a = this.yamlStream.Documents.ToList();
-			var	c = a//.AsParallel()
+
+			// Lấy tất cả YamlMappingNodes từ yamlStream
+			var mappingNodes = this.yamlStream.Documents
 				.Where(r => r.RootNode is YamlMappingNode)
 				.Select(r => (YamlMappingNode)r.RootNode)
 				.ToList();
-			Console.WriteLine(c.Count);
-			var b= 	c.FirstOrDefault(r => r.Children.ContainsKey(findNode));
-			return b;
+
+			// Tìm YamlMappingNode chứa key
+			var targetNode = mappingNodes.FirstOrDefault(r => r.Children.ContainsKey(findNode));
+
+			return targetNode;
 		}
 		private YamlMappingNode? FindYamlScalarNode(EFirstComponentConfig efirst, string scalarKey)
 		{
