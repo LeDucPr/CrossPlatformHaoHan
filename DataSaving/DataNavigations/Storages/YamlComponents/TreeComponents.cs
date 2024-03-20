@@ -14,7 +14,8 @@ namespace DataSaving.DataNavigations.Storages.YamlComponents
 	}
 	public class TreeComponents : YamlObject
 	{
-		public string Name { get; set; } = null!;
+		public Type componentType = null!;
+		public string PropertyName { get; set; } = null!;
 		public List<TreeComponents>? Children; // nếu type là Prime thì không có children
 	}
 

@@ -11,29 +11,33 @@ namespace DataSaving.DataNavigations.Storages.YamlComponents
 	{
 		// khi kế thừa thì để yêu cầu các dữ liệu 2 chiều để dưới dạng Properties {get; set; }
 		// vì thế chỉ lấy kiểu Properties và không lấy kiểu Fields
-		private Type selfType = null!;
+		public Type componentType = null!;
 		public ObjectDataTree()
 		{
 			this.Children = new List<TreeComponents>();
 		}
 		public ObjectDataTree(Type type) : this()
 		{
-			this.Name = type.Name;
-			this.selfType = type;
+			this.PropertyName = type.Name;
+			this.componentType = type;
 		}
 		public void ObjectToTree()
 		{
-			this.ObjectToTree(this.selfType);
+			this.ObjectToTree(this.componentType);
 		}
 		private void ObjectToTree(Type type/*= this.GetType()*/)
 		{
 			var typeNameProperty = type.GetProperties();
 			typeNameProperty.ToList().ForEach(x =>
 			{
-				this.Children.Create().Add(new TreeComponents() { Name = type.Name });
-				if (!(x.PropertyType.IsPrimitive || x.PropertyType == typeof(string)))
+				this.Children.Create().Add(new TreeComponents() { PropertyName = type.Name });
+				if (this.IsPrimitive(x.PropertyType))
 					this.ObjectToTree(x.PropertyType);
 			});
+		}
+		private bool IsPrimitive(Type type)
+		{
+			return type.IsPrimitive || type.IsValueType || (type == typeof(string));
 		}
 	}
 }
