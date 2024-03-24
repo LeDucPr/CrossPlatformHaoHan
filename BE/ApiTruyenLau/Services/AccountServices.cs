@@ -30,6 +30,8 @@ namespace ApiTruyenLau.Services
 			{
 				if (clientInfoCvt.IsValid()) { }
 				User.Client newClient = clientInfoCvt.ToClientAccount();
+				newClient.Account.CreateDate = DateTime.Now;
+				newClient.Account.LastLoginDate = DateTime.Now;
 				await _DB.GetMongoDBEntity(typeof(User.Client)).AddMongoDBEntity(newClient);
 				return true;
 			}
@@ -53,10 +55,11 @@ namespace ApiTruyenLau.Services
 						MissingMemberHandling = MissingMemberHandling.Ignore,
 						SerializationBinder = new MySerializationBinderAccount()
 					};
-					List<User.Client?>? findedClients = findedClientObjs
+					User.Client? findedClient = findedClientObjs
 						.Select(obj => JsonConvert.DeserializeObject<User.Client>(JsonConvert.SerializeObject(obj), settings))
-						.ToList();
-					return findedClients[0]!;
+						.ToList().ElementAt(0);
+					findedClient!.Account.LastLoginDate = DateTime.Now;
+					return findedClient!;
 				}
 				throw new Exception("Client not found");
 			}
