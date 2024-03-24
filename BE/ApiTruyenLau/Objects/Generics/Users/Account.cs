@@ -1,9 +1,10 @@
-﻿using System.Security.Cryptography;
+﻿using ApiTruyenLau.Objects.Interfaces.Users;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace ApiTruyenLau.Objects.Generics.Users
 {
-	public class Account
+	public class Account : IAccount, IEquatable<Account>
 	{
 		public string UserName { get { return userName; } set { userName = value; } }
 		public string Password { get { return password; } set { password = value; } }
@@ -30,6 +31,11 @@ namespace ApiTruyenLau.Objects.Generics.Users
 				var hash = sha512.ComputeHash(bytes);
 				return Convert.ToBase64String(hash);
 			}
+		}
+
+		public bool Equals(Account? other)
+		{
+			throw new NotImplementedException();
 		}
 	}
 }

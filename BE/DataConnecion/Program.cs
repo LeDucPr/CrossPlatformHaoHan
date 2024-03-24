@@ -9,7 +9,8 @@ namespace DataConnecion
 		{
 			Console.WriteLine("Hello, World!");
 			// sử dụng MongoDBEntity
-			var mongo = new MongoDBEntity<object>("mongodb://localhost:27017", "TruyenLau", "TruyenLauCollection");
+			//var mongo = new MongoDBEntity<object>("mongodb://localhost:27017", "TruyenLau", "TruyenLauCollection");
+			var mongo = new MongoDBEntity<object>("mongodb://localhost:27017", "Client", "Client");
 			//var document = new BsonDocument
 			//{
 			//	{ "title", "MongoDB" },
@@ -75,7 +76,7 @@ namespace DataConnecion
 
 			// client 
 			Client client1 = new Client();
-			client1.Id = "3"; 
+			client1.Id = "3";
 			client1.Account = new Account() { UserName = "client1", Password = "Thằng rank con" };
 			client1.Spends = new List<Spend>()
 			{
@@ -91,7 +92,13 @@ namespace DataConnecion
 			//mongo.Indexs(nameof(employee1.Id), nameof(employee1.Account));
 			//mongo.DeleteObjects(nameof(client1.Id), client1.Id);
 
-			mongo.DropCollection();
+			//mongo.DropCollection();
+			//var a = await mongo.FindObjects(new Dictionary<string, string>()
+			//{
+			//	{ "Account.UserName", "Conchongu" },
+			//	{ "Account.Password", "nvjfrn2U@fwS" }
+			//});
+			//Console.WriteLine(a.Count);
 		}
 	}
 }

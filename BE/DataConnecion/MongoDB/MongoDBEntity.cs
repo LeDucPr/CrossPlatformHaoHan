@@ -18,107 +18,111 @@ namespace DataConnecion.MongoDB
 			_collection = _database.GetCollection<BsonDocument>(bsonDocString);
 			//_logger.LogInformation("MongoDBEntity");
 		}
-		public void AddMongoDBEntity(List<BsonDocument> bsons)
+		public async void AddMongoDBEntity(List<BsonDocument> bsons)
 		{
-			_collection.InsertMany(bsons);
+			await _collection.InsertManyAsync(bsons);
 		}
-		public void AddMongoDBEntity(BsonDocument bsons)
+		public async void AddMongoDBEntity(BsonDocument bsons)
 		{
-			_collection.InsertOne(bsons);
+			await _collection.InsertOneAsync(bsons);
 		}
-		public void AddMongoDBEntity(T obj)
+		public async 		Task
+AddMongoDBEntity(T obj)
 		{
 			BsonDocument document = JsonExt<T>.ToBson(obj);
 			if (document != null && !document.Equals(new BsonDocument()))
-				_collection.InsertOne(document);
+				await _collection.InsertOneAsync(document);
 		}
-		public List<BsonDocument> FindBsons(Dictionary<string, string> findComponents)
+		public async Task<List<BsonDocument>> FindBsons(Dictionary<string, string> findComponents)
 		{
 			if (findComponents == null || findComponents.Count == 0)
 				return new List<BsonDocument>();
 			var filter = new BsonDocument(findComponents);
-			List<BsonDocument> documents = _collection.Find(filter).ToList();
+			List<BsonDocument> documents = await _collection.Find(filter).ToListAsync();
 			return documents;
 		}
-		public List<T> FindObjects(Dictionary<string, string> findComponents)
+		public async Task<List<T>> FindObjects(Dictionary<string, string> findComponents)
 		{
 			// bằng null hoặc rỗng thì return không có gì 
 			if (findComponents == null || findComponents.Count == 0)
 				return new List<T>();
-			List<BsonDocument> documents = this.FindBsons(findComponents);
+			List<BsonDocument> documents = await this.FindBsons(findComponents);
 			List<T> objects = documents.Select(doc => BsonSerializer.Deserialize<T>(doc)).ToList();
 			return objects;
 		}
 
 		// xóa tất cả dữ liệu trong collection
-		public void DeleteAll()
+		public async void DeleteAll()
 		{
-			_collection.DeleteMany(new BsonDocument());
+			await _collection.DeleteManyAsync(new BsonDocument());
 		}
-		public void DeleteObjects(Dictionary<string, string> deleteComponents)
+		public async void Task<DeleteObjects>(Dictionary<string, string> deleteComponents)
 		{
-			List<BsonDocument> bsonElements = this.FindBsons(deleteComponents);
+			List<BsonDocument> bsonElements = await this.FindBsons(deleteComponents);
 			if (bsonElements.Count == 0)
 				return;
 			_collection.DeleteMany(new BsonDocument(deleteComponents));
 		}
-		public void DeleteObject(BsonDocument bson)
+		public async void DeleteObject(BsonDocument bson)
 		{
-			_collection.DeleteOne(bson);
+			await _collection.DeleteOneAsync(bson);
 		}
-		public void DeleteObjects(string key, string value)
+		public async void DeleteObjects(string key, string value)
 		{
 			var filter = Builders<BsonDocument>.Filter.Eq(key, value);
-			_collection.DeleteMany(filter);
+			await _collection.DeleteManyAsync(filter);
 		}
-		public void DeleteObjects(BsonDocument bsons)
+		public async void DeleteObjects(BsonDocument bsons)
 		{
-			_collection.DeleteMany(bsons);
+			await _collection.DeleteManyAsync(bsons);
 		}
-		public void DeleteObject(T obj)
+		public async void DeleteObject(T obj)
 		{
 			BsonDocument document = JsonExt<T>.ToBson(obj);
 			if (document != null && !document.Equals(new BsonDocument()))
-				_collection.DeleteOne(document);
+				await _collection.DeleteManyAsync(document);
 		}
-		public void DeleteObjects(List<T> objs)
+		public async void DeleteObjects(List<T> objs)
 		{
 			foreach (var obj in objs)
 			{
 				BsonDocument document = JsonExt<T>.ToBson(obj);
 				if (document != null && !document.Equals(new BsonDocument()))
-					_collection.DeleteOne(document);
+					await _collection.DeleteManyAsync(document);
 			}
 		}
 		// xóa luôn collection
-		public void DropCollection()
+		public async void DropCollection()
 		{
-			_database.DropCollection(_collection.CollectionNamespace.CollectionName);
+			await _database.DropCollectionAsync(_collection.CollectionNamespace.CollectionName);
 		}
-		public void Index(string fieldName)
+		public async void Index(string fieldName)
 		{
 			var keys = Builders<BsonDocument>.IndexKeys.Ascending(fieldName);
-			_collection.Indexes.CreateOne(new CreateIndexModel<BsonDocument>(keys));
+			await _collection.Indexes.CreateOneAsync(new CreateIndexModel<BsonDocument>(keys));
 		}
-		public void Indexs(params string[] fieldNames)
+		public async void Indexs(params string[] fieldNames)
 		{
 			var keys = Builders<BsonDocument>.IndexKeys.Ascending(fieldNames[0]);
 			for (int i = 1; i < fieldNames.Length; i++)
 				keys = keys.Ascending(fieldNames[i]);
-			_collection.Indexes.CreateOne(new CreateIndexModel<BsonDocument>(keys));
+			await _collection.Indexes.CreateOneAsync(new CreateIndexModel<BsonDocument>(keys));
 		}
 		// Sắp xếp lại _collection với khóa được truyền vào 
-		public void SortCollection(string fieldName)
+		public async Task<List<BsonDocument>> SortCollection(string fieldName)
 		{
 			var sort = Builders<BsonDocument>.Sort.Ascending(fieldName);
-			_collection.Find(new BsonDocument()).Sort(sort);
+			List<BsonDocument> sortedDocuments = await _collection.Find(new BsonDocument()).Sort(sort).ToListAsync();
+			return sortedDocuments;
 		}
-		public void SortCollection(string[] fieldNames)
+
+		public async Task<List<BsonDocument>> SortCollection(string[] fieldNames)
 		{
 			var sort = Builders<BsonDocument>.Sort.Ascending(fieldNames[0]);
 			for (int i = 1; i < fieldNames.Length; i++)
 				sort = sort.Ascending(fieldNames[i]);
-			_collection.Find(new BsonDocument()).Sort(sort);
+			List<BsonDocument> sortedDocuments = await _collection.Find(new BsonDocument()).Sort(sort).ToListAsync();
+			return sortedDocuments;
 		}
 	}
 }

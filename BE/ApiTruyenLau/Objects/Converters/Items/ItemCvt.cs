@@ -1,4 +1,4 @@
-﻿namespace ApiTruyenLau.Objects.Conversions.Items
+﻿namespace ApiTruyenLau.Objects.Converters.Items
 {
 	public class ItemCvt
 	{
