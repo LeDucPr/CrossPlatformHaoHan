@@ -9,7 +9,7 @@ import {
   import { useEffect, useState } from 'react';
   import Books from '../data';
   import SearchFilter from '../components/SearchScreen/SearchFilter';
-
+  import BackButton from '../components/BackButton';
 
   const {width: Screen_width, height: Screen_height} = Dimensions.get('window');
 
@@ -41,6 +41,7 @@ import {
     }
     return (
         <SafeAreaView style = {{flex:1, marginHorizontal: 20}}>
+          <BackButton navigation={navigation}/>
           <View style={styles.parent}>
             <TextInput placeholder='Search' style={styles.searchBox} autoCapitalize='none' autoCorrect={false} value={searchQuery}
                        onChangeText={(query) => handleSearch(query)}
@@ -64,7 +65,7 @@ import {
       backgroundColor: 'white'
     },
     parent: {
-      marginTop: '15%',
+      marginTop: '5%',
       paddingHorizontal:20, 
       paddingVertical: 10, 
       borderColor: "gray",
@@ -85,6 +86,12 @@ import {
       justifyContent: "center",
       alignItems: "center",
       marginRight: 5,
+    },
+    backButton:{
+      backgroundColor: "white",
+      marginTop: '5%',
+      height: 30,
+      width: 30,
     }
   })
   

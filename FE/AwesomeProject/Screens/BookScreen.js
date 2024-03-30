@@ -1,17 +1,21 @@
-import { Text, SafeAreaView, StyleSheet, Image, Dimensions, View, ScrollView } from 'react-native';
-
+import { Text, SafeAreaView, StyleSheet, Image, Dimensions, View, ScrollView, TouchableOpacity,Button, ImageBackground } from 'react-native';
+import BackButton from '../components/BackButton';
 const {width: Screen_width, height: Screen_height} = Dimensions.get('window');
 
-export default function BookScreen({route}) {
+export default function BookScreen({route, navigation}) {
     const { item } = route.params;
     return (
         <SafeAreaView style = {{flex:1}}>
-            <View style={styles.container}> 
+            <View style={styles.container}>
                 <View style= {styles.image}>
-                    <Image source={item.img}  resizeMode="cover" style = {{flex: 1, width: "100%"}}/>
+                    <ImageBackground source={item.img}  resizeMode="cover" style = {{flex: 1, width: "100%"}}>
+                    <View style={styles.backConainer}>
+                      <BackButton navigation ={navigation}/>
+                    </View>
                     <View style={styles.titleContainer}>
                         <Text style={styles.titletext}>{item.title}</Text>
                     </View>
+                    </ImageBackground>
                 </View>
                 <View style={styles.overlay}>
                 <ScrollView >
@@ -41,10 +45,13 @@ const styles = StyleSheet.create({
         backgroundColor: 'red'
       },
       titleContainer: {
-        ...StyleSheet.absoluteFillObject,
+        position: 'absolute',
         justifyContent: 'flex-end',
         bottom: 20,
         padding: 20
+      },
+      backConainer:{
+        padding: 20,
       },
       titletext: {
         width: '80%',
@@ -77,5 +84,6 @@ const styles = StyleSheet.create({
         marginBottom:10,
         fontSize:18,
 
-      }
+      },
+
 });

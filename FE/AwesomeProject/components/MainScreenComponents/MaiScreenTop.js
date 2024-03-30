@@ -31,8 +31,9 @@ const styles = StyleSheet.create({
     width:  '100%',
     height: '15%',
     padding: 5,
+    backgroundColor: '#FFFCFC',
     borderBottomWidth:1,
-    borderBottomColor: '#DAC6C6',
+    borderBottomColor: '#FAF9F9',
   },
   TopSection:{
     flex: 0.7,

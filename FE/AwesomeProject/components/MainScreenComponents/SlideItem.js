@@ -10,7 +10,7 @@ import {
 
   const {width: Screen_width, height: Screen_height} = Dimensions.get('window');
 
-  export default function SliderItem ({item})  {  
+  export default function SliderItem ({item, navigation})  {  
     const translateYImage = new Animated.Value(10);
 
     Animated.timing(translateYImage, {
@@ -20,6 +20,9 @@ import {
       easing: Easing.bounce,
     }).start();
     return (
+      <TouchableOpacity style = {{flext: 1}}onPress={() => {
+        navigation.navigate('BookScreen', {item})
+    }}>
         <View style={styles.container}>
             <Image source={item.img}  resizeMode="cover" 
              style={[
@@ -42,6 +45,7 @@ import {
                 </TouchableOpacity>
             </View> */}
         </View>
+        </TouchableOpacity>
     );
   }
   
@@ -58,8 +62,8 @@ import {
         flex: 1,
         width: '100%',
         borderColor: "#2F2C2C",
-        borderBottomWidth: 2,
-        borderTopWidth: 2,
+        borderBottomWidth: 1,
+        borderTopWidth: 1,
       },
       content:{
         padding:10,

@@ -31,7 +31,7 @@ export default function App() {
   return (
       <NavigationContainer theme={MyTheme}>
         <Stack.Navigator screenOptions={{
-              headerShown: true,
+              headerShown: false,
             }} initialRouteName='MainScreen'>
           <Stack.Screen name="MainScreen" component={MainScreen}  />
           {/* <Stack.Screen name="DashBoard" component={DashBoardScreen}  />    */}

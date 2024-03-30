@@ -13,7 +13,7 @@ import WebLogo from '../WebLogo';
 import Pagination from './Pagination';
 
 
-  export default function Slider()  {
+  export default function Slider({navigation})  {
     const [index, setIndex] = useState(0);
     const scrollX = useRef(new Animated.Value(0)).current;
     
@@ -80,7 +80,7 @@ import Pagination from './Pagination';
             data={Slides}
             ref={flatlistRef}
 				    getItemLayout={getItemLayout}
-            renderItem={({item}) => <SliderItem item = {item}/>}
+            renderItem={({item}) => <SliderItem item = {item} navigation={navigation}/>}
             horizontal
             pagingEnabled
             snapToAlignment='center'
