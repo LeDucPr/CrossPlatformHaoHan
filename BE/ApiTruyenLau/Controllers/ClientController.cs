@@ -1,10 +1,6 @@
 ﻿using ApiTruyenLau.Objects.Converters.Users;
 using ApiTruyenLau.Services.Interfaces;
-using DataConnecion.MongoObjects;
 using Microsoft.AspNetCore.Mvc;
-using Item = ApiTruyenLau.Objects.Generics.Items;
-using MGDBs = DataConnecion.MongoObjects.CommonObjects;
-using User = ApiTruyenLau.Objects.Generics.Users;
 using UserCvt = ApiTruyenLau.Objects.Converters.Users;
 
 namespace ApiTruyenLau.Controllers
@@ -16,7 +12,7 @@ namespace ApiTruyenLau.Controllers
 		private readonly ILogger<ClientController> _logger;
 		private readonly IConfiguration _configuration;
 		private IAccountServices _accountServices;
-		public ClientController(IAccountServices accountServices, ILogger<ClientController> logger, IConfiguration configuration) 
+		public ClientController(IAccountServices accountServices, ILogger<ClientController> logger, IConfiguration configuration)
 		{
 			_logger = logger;
 			_configuration = configuration;
@@ -36,7 +32,7 @@ namespace ApiTruyenLau.Controllers
 				UserNameAccount = userName,
 				PasswordAccount = password
 			};
-			var clientExist = await _accountServices.SignInClient(clientInfoCvt); 
+			var clientExist = await _accountServices.SignInClient(clientInfoCvt);
 			UserCvt.ClientInfoCvt clientInfoExist = clientExist.ToClientInfoCvt();
 			return Ok(clientInfoExist);
 		}

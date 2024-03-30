@@ -38,6 +38,7 @@ namespace ApiTruyenLau
 			services.AddSingleton(sp => sp.GetRequiredService<IMongoClient>().GetDatabase(mongoDBSettings?.DatabaseName));
 			services.AddSingleton<IConfiguration>(builder.Configuration);
 			services.AddScoped<IAccountServices, AccountServices>();
+			services.AddScoped<IBookServices, BookServices>();
 
 		}
 

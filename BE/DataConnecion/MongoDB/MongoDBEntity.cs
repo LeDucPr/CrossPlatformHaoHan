@@ -1,6 +1,7 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
 using MongoDB.Driver;
+using System.Collections.Generic;
 
 namespace DataConnecion.MongoDB
 {
@@ -26,8 +27,7 @@ namespace DataConnecion.MongoDB
 		{
 			await _collection.InsertOneAsync(bsons);
 		}
-		public async 		Task
-AddMongoDBEntity(T obj)
+		public async Task AddMongoDBEntity(T obj)
 		{
 			BsonDocument document = JsonExt<T>.ToBson(obj);
 			if (document != null && !document.Equals(new BsonDocument()))
@@ -48,6 +48,17 @@ AddMongoDBEntity(T obj)
 				return new List<T>();
 			List<BsonDocument> documents = await this.FindBsons(findComponents);
 			List<T> objects = documents.Select(doc => BsonSerializer.Deserialize<T>(doc)).ToList();
+			return objects;
+		}
+
+		public async Task<List<T>> FindObjects(KeyValuePair<string, List<string>> findContainComponents)
+		{
+			// Tạo một danh sách các bộ lọc, mỗi bộ lọc tương ứng với một giá trị trong findContainComponents.Value
+			var filters = findContainComponents.Value.Select(value => Builders<BsonDocument>.Filter.Eq(findContainComponents.Key, value)).ToList();
+			// Filter Or cho phép lọc nhiều thằng cùng lúc với các điều kiện có thể đồng thời OK 
+			var filter = Builders<BsonDocument>.Filter.Or(filters);
+			var documents = await _collection.Find(filter).ToListAsync();
+			var objects = documents.Select(doc => BsonSerializer.Deserialize<T>(doc)).ToList();
 			return objects;
 		}
 

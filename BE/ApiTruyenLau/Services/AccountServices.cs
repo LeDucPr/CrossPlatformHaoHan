@@ -15,7 +15,7 @@ namespace ApiTruyenLau.Services
 	{
 		private readonly IConfiguration _configuration;
 		private MGDBs _DB;
-		private readonly Type[] typeColection = new Type[] { typeof(User.Client), typeof(Item.Book) };
+		private readonly Type[] typeColection = new Type[] { typeof(User.Client) };
 		public AccountServices(IConfiguration configuration)
 		{
 			_configuration = configuration;
