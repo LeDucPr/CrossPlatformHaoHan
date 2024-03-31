@@ -1,6 +1,8 @@
-
+using ApiTruyenLau.Services;
+using ApiTruyenLau.Services.Interfaces;
 using Microsoft.OpenApi.Models;
 using MongoDB.Driver;
+using System.Configuration;
 
 namespace ApiTruyenLau
 {
@@ -32,7 +34,11 @@ namespace ApiTruyenLau
 			// Configure MongoDB
 			var mongoDBSettings = builder.Configuration.GetSection("MongoDB").Get<MongoDBSettings>();
 			services.AddSingleton<IMongoClient, MongoClient>(sp => new MongoClient(mongoDBSettings?.ConnectionString));
+
 			services.AddSingleton(sp => sp.GetRequiredService<IMongoClient>().GetDatabase(mongoDBSettings?.DatabaseName));
+			services.AddSingleton<IConfiguration>(builder.Configuration);
+			services.AddScoped<IAccountServices, AccountServices>();
+			services.AddScoped<IBookServices, BookServices>();
 
 		}
 
@@ -46,10 +52,5 @@ namespace ApiTruyenLau
 			app.UseHttpsRedirection();
 			app.UseAuthorization();
 		}
-	}
-	public class MongoDBSettings
-	{
-		public string ConnectionString { get; set; } = null!; // Connection string
-		public string DatabaseName { get; set; } = null!; // Database name
 	}
 }

@@ -29,9 +29,8 @@ namespace ApiTruyenLau.Objects.Interfaces.Items
 		public int Reader { get; set; } // số người đọc
 		public Dictionary<string, string> Viewers { get; set; } // người xem
 
-		// tài nguyên
-		public byte[] Image { get; set; } // hình ảnh
-		public string Link { get; set; } // liên kết
+		// tài nguyên bìa 
+		public List<byte[]> CoverImages { get; set; } // ảnh bìa sách
 
 		// số bản lưu trữ trên database
 		public int NumberOfCopies { get; set; } // số bản lưu trữ
