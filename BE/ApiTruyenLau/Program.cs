@@ -40,6 +40,10 @@ namespace ApiTruyenLau
 			services.AddScoped<IAccountServices, AccountServices>();
 			services.AddScoped<IBookServices, BookServices>();
 
+			services.AddCors(options =>
+			{
+				options.AddPolicy("AllowAllOrigins", builder => { builder.AllowAnyOrigin(); });
+			});
 		}
 
 		private static void Configure(IServiceCollection services, IApplicationBuilder app, IWebHostEnvironment env)
