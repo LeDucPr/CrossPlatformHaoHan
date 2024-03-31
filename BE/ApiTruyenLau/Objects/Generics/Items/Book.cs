@@ -205,8 +205,7 @@ namespace ApiTruyenLau.Objects.Generics.Items
 		/// <returns></returns>
 		public static List<byte[]> ConvertImagesToByteArrays(this Book book, bool isConvertToPng, string directoryPath)
 		{
-			var imageFiles = Directory.GetFiles(directoryPath, "*.*", SearchOption.AllDirectories)
-				.Where(file => new string[] { ".jpg", ".jpeg", ".bmp", ".png", ".gif" }.Contains(Path.GetExtension(file)));
+			string[] imageFiles = Directory.GetFiles(directoryPath).Where(file => IsImage(file)).ToArray();
 			var byteArrays = imageFiles.Select(filePath =>
 			{
 				using var image = Image.FromFile(filePath);
@@ -222,6 +221,11 @@ namespace ApiTruyenLau.Objects.Generics.Items
 				return isConvertToPng ? ConvertImageToPngByteArray(image) : ConvertImageToByteArray(image);
 			}).ToList();
 			return byteArrays;
+		}
+		private static bool IsImage(string file)
+		{
+			string[] extensions = new string[] { ".jpg", ".jpeg", ".png", ".gif", ".tiff", ".bmp", ".svg" };
+			return extensions.Any(x => file.EndsWith(x, StringComparison.OrdinalIgnoreCase));
 		}
 		#endregion Thiết lập đầu vào
 	}
