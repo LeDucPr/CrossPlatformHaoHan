@@ -1,4 +1,6 @@
 ﻿using ApiTruyenLau.Objects.Generics.Items;
+using MongoDB.Bson.Serialization.IdGenerators;
+using System.Runtime.CompilerServices;
 
 namespace ApiTruyenLau.Objects.Converters.Items
 {
@@ -13,8 +15,10 @@ namespace ApiTruyenLau.Objects.Converters.Items
 		public int Part { get; set; }
 		public string Description { get; set; } = null!;
 		public string Language { get; set; } = null!;
-		public Dictionary<string, byte[]>? Images { get; set; }
-		public List<string> IntroString { get; set; } = null!;
+		public List<string>? coverComicImagePngStrings { get; set; } = null!;
+		public string? coverTextString { get; set; } = null!; 
+		public List<string>? introComicImagePngStrings { get; set; } = null!;
+		public string? introTextString { get; set; } = null!;
 		// đánh giá 
 		public string? Rating { get; set; }
 		public Dictionary<string, string>? Viewers { get; set; }
@@ -25,6 +29,8 @@ namespace ApiTruyenLau.Objects.Converters.Items
 
 		public static IntroBookPartCvt ToIntroBookPartCvt(this Book book)
 		{
+			(List<string> coverComicImagePngStrings, string coverTextString) = book.GetCover();
+			(List<string> introComicImagePngStrings, string introTextString) = book.GetIntro();
 			IntroBookPartCvt introBookPartCvt = new IntroBookPartCvt();
 			introBookPartCvt.Id = book.Id;
 			introBookPartCvt.Author = book.Author;
@@ -35,8 +41,11 @@ namespace ApiTruyenLau.Objects.Converters.Items
 			introBookPartCvt.Part = book.Part;
 			introBookPartCvt.Description = book.Description;
 			introBookPartCvt.Language = book.Language;
+			introBookPartCvt.coverComicImagePngStrings = coverComicImagePngStrings;
+			introBookPartCvt.coverTextString = coverTextString;
+			introBookPartCvt.introComicImagePngStrings = introComicImagePngStrings;
+			introBookPartCvt.introTextString = introTextString;
 			// Lấy 3 ảnh đầu tiên nếu là truyện tranh, 
-			introBookPartCvt.IntroString = book.GetIntroString();
 			introBookPartCvt.Rating = book.Rating;
 			introBookPartCvt.Viewers = book.Viewers;
 			return introBookPartCvt;

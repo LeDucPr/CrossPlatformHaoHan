@@ -26,17 +26,16 @@ namespace ApiTruyenLau.Objects.Converters.Items
 		public Rectangle? Size { get; set; } = new Rectangle(0, 0, 0, 0);
 		//public Dictionary<string, byte[]>? Images { get; set; }
 
-		// tài nguyên nội dung truyện
+		// thể loại truyện 0: Comic, 1 Story 
 		public EBookType BookType { get; set; } = EBookType.Story; // để mặc định là truyện chữ
-		public List<string> BookContent { get; set; } = null!; // nội dung truyện
-		public string? ContentLink { get; set; } = null!; // cái này chỉ dùng cho truyện tranh 
+
+		// tài nguyên nội dung truyện
+		public string? ContentLink { get; set; } = null!; // cái này (hiện tại để dưới dạng đường dẫn thư mục)
 
 		// tài nguyên bìa sách 
-		//public string? LocalLink { get; set; } = null!; // tài nguyên bìa trên server nội bộ hoặc đường dẫn thư mục 
-		//public string? Link { get; set; } // link tài nguyên bìa sách
+		//public string[]? CoverImagePaths { get; set; } = null!; // đường dẫn ảnh bìa sách
+		public string? CoverLink { get; set; } = null!; // link bìa sách (hiện tại để dưới dạng đường dẫn thư mục)
 
-		public string? CoverImageDirectoryLink { get; set; } = null!; // link ảnh bìa sách
-		public string[]? CoverImagePaths { get; set; } = null!; // đường dẫn ảnh bìa sách
 	}
 
 	public static class BookCreaterCvtExtension
@@ -65,24 +64,17 @@ namespace ApiTruyenLau.Objects.Converters.Items
 				Size = bcCvt.Size,
 				//Link = bcCvt.Link ?? bcCvt.LocalLink ?? string.Empty, // hiện tại bỏ qua cái này 
 				BookType = bcCvt.BookType, // loại sách quy định kiểu đọc dữ liệu 
+				ContentLink = bcCvt.ContentLink!,
+				CoverLink = bcCvt.CoverLink!
 			};
-			switch (bcCvt.BookType)
-			{
-				case EBookType.Story:
-					book.StoryContent = string.Join("\n", bcCvt.BookContent);
-					break;
-				case EBookType.Comic:
-					book.ComicContent = book.ConvertImagesToByteArrays(true, bcCvt.ContentLink!); // chuyển luôn qua PNG
-					break;
-			}
-			if (!string.IsNullOrEmpty(bcCvt.CoverImageDirectoryLink))
-				book.CoverImages = book.ConvertImagesToByteArrays(true, bcCvt.CoverImageDirectoryLink);
-			else if (bcCvt.CoverImagePaths != null && bcCvt.CoverImagePaths.Length != 0)
-				book.CoverImages = book.ConvertImagesToByteArrays(true, bcCvt.CoverImagePaths);
+			// Sau khi thay đổi thì Document chỉ lưu bằng đường dẫn thư mục
+			// Với việc sử dụng thư mục điều hướng thì có thể bỏ qua việc sử dụng BookType
+			// Lúc này sử dụng đường dẫn tương đối (tính từ file .exe) là tốt nhất cho việc Lấy trích dẫn 
 			return book;
 		}
 	}
 }
+
 
 //[
 //  {
@@ -111,27 +103,14 @@ namespace ApiTruyenLau.Objects.Converters.Items
 //      "size": {
 //	"width": 13,
 //        "height": 18
-
-//	  },
+//      },
 //      "x": 0,
 //      "y": 0,
 //      "width": 13,
 //      "height": 18
 //    },
-//    "images": {
-//	"additionalProp1": "string",
-//      "additionalProp2": "string",
-//      "additionalProp3": "string"
-
-//	},
 //    "bookType": 0,
-//    "bookContent": [
-//      "C:\\Users\\duc18\\Downloads\\datatruyenText"
-//    ],
-//    "contentLink": "string",
-//    "coverImageDirectoryLink": "string",
-//    "coverImagePaths": [
-//      "string"
-//    ]
+//    "contentLink": "C:\\Users\\duc18\\Downloads\\DataTest\\Content",
+//    "coverLink": "C:\\Users\\duc18\\Downloads\\DataTest\\Cover"
 //  }
 //]

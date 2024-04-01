@@ -1,8 +1,6 @@
 ﻿using ApiTruyenLau.Objects.Interfaces.Items;
-using SharpCompress.Common;
 using System.Drawing;
 using System.Drawing.Imaging;
-using System.IO;
 
 namespace ApiTruyenLau.Objects.Generics.Items
 {
@@ -34,8 +32,8 @@ namespace ApiTruyenLau.Objects.Generics.Items
 		private string? _format = null!;
 		private double _price; // cái này chắc đề cập thôi, mọi người đọc thì không tính 
 		private Rectangle? _size; // kích thước (x, y, w, h)
-		private string? _storyContent; // nội dung bên trong sách
-		private List<byte[]>? _comicContent; // nội dung truyện tranh
+		private string _contentLink = null!; // đường dẫn nội dung sách (cái này chắc là file text)
+		private string _coverLink = null!; // đường dẫn bìa sách (cái này chắc là file ảnh)
 
 		// --> Tất nhiên nếu là Comic thì _storyContent = null và ngược lại
 		// --> Nội dung được lưu vào trong DataBase dưới dạng byte[]
@@ -45,9 +43,6 @@ namespace ApiTruyenLau.Objects.Generics.Items
 		private string? _rating = null!;
 		private int _reader;
 		private Dictionary<string, string>? _viewers; // người xem (userName, đánh giá)
-
-		// tài nguyên bìa
-		private List<byte[]>? _coverImages = null!; // ảnh bìa sách (chắc là nhiều hơn 1 ảnh)
 
 		// số bản lưu trữ trên database
 		private int _numberOfCopies;
@@ -78,19 +73,18 @@ namespace ApiTruyenLau.Objects.Generics.Items
 		public double Price { get { return _price; } set { _price = value; } } // giá
 		public Rectangle? Size { get { return _size; } set { _size = value; } } // kích thước
 
-		// tài nguyên nội dung truyện 
-		public string? StoryContent { get { return _storyContent; } set { _storyContent = value; } } // nội dung truyện
-		public List<byte[]>? ComicContent { get { return _comicContent; } set { _comicContent = value; } } // nội dung truyện tranh
+		// tài nguyên nội dung truyện
+		public string ContentLink { get { return _contentLink; } set { _contentLink = value; } } // đường dẫn nội dung
+
+		// tài nguyên bìa sách
+		public string CoverLink { get { return _coverLink; } set { _coverLink = value; } } // đường dẫn bìa sách
 
 		// đánh giá
 		public string? Rating { get { return _rating; } set { _rating = value; } } // đánh giá
 		public int Reader { get { return _reader; } set { _reader = value; } } // số người đọc
 		public Dictionary<string, string>? Viewers { get { return _viewers; } set { _viewers = value; } } // người xem
 
-		// tài nguyên bìa
-		public List<byte[]>? CoverImages { get { return _coverImages; } set { _coverImages = value; } } // ảnh bìa sách
-
-		// số bản lưu trữ trên database 
+		// số bản lưu trữ trên database (dành cho lưu trữ phi tập trung, có thể dùng MQ thỏ)
 		public int NumberOfCopies { get { return _numberOfCopies; } set { _numberOfCopies = value; } } // số bản lưu trữ
 		public List<string>? DataStoragePaths { get { return _dataStoragePaths; } set { _dataStoragePaths = value; } } // đường dẫn lưu trữ
 
@@ -104,21 +98,6 @@ namespace ApiTruyenLau.Objects.Generics.Items
 		// intro sách là một mẩu đầu của Content (dù là comic hay là story) 
 		// thế nên them một field để xác định intro là không nên 
 
-		/// <summary>
-		/// Ở đây sẽ có 2 kiểu, 1 là intro về text (string) cho story, 
-		/// 2 là intro về ảnh (List<byte[]></byte>) cho comic
-		/// </summary>
-		/// <param name="book"></param>
-		/// <returns></returns>
-		private static (Type, object)? GetIntro(this Book book)
-		{
-			return book.BookType switch
-			{
-				EBookType.Comic => (typeof(List<byte[]>), book.ComicContent?.Count >= 3 ? book.ComicContent.Take(3).ToList() : null)!,
-				EBookType.Story => (typeof(string), book.StoryContent)!,
-				_ => null,
-			};
-		}
 		/// <summary>
 		/// Có thể trả về kiểu dữ liệu động, trong trường hợp này có thể là strg hoặc List<byte[]>
 		/// </summary>
@@ -140,49 +119,162 @@ namespace ApiTruyenLau.Objects.Generics.Items
 			return (T)intro.Value.Item2;
 		}
 
+		/// <summary>
+		/// Trả về Intro của cả 2 dạng 
+		/// </summary>
+		/// <param name="book"></param>
+		/// <param name="directoryPath"></param>
+		/// <returns></returns>
+		public static (List<string> comicImagePngStrings, string textString) GetIntro(this Book book, int amountImages = 3, int amountWords = 100)
+		{
+			return (book.GetIntroImagesStringBase64PngFromDirectory(book.ContentLink, amountImages), book.GetIntroTextFromContent(book.ContentLink, amountWords));
+		}
 
-		public static List<string> GetIntroString(this Book book)
+		public static (List<string> comicImagePngStrings, string textString) GetCover(this Book book)
+		{
+			return (book.GetImageStringBase64PngFromDirectory(book.CoverLink), book.GetTextFromDirectory(book.CoverLink));
+		}
+
+		public static (List<string> comicImagePngStrings, string textString) GetContent(this Book book, string directoryPath)
+		{
+			return (book.GetImageStringBase64PngFromDirectory(book.ContentLink), book.GetTextFromDirectory(book.ContentLink));
+		}
+
+		/// <summary>
+		/// Đều trả về List<string>, nhưng mà của Text thì có List chắc chắn 100 ký tự nhưng mà chỉ có 1 phần tử trong List
+		/// </summary>
+		/// <param name="book"></param>
+		/// <param name="directoryPath"></param>
+		/// <returns></returns>
+		/// <exception cref="Exception"></exception>
+		public static List<string> GetIntroByBookType(this Book book, string directoryPath)
 		{
 			return book.BookType switch
 			{
-				EBookType.Comic => book.ConvertBytesToStringsContent(),
-				EBookType.Story => string.IsNullOrEmpty(book.StoryContent) ? new List<string>() : new List<string> { book.GetIntroTextFromContent() },
+				EBookType.Comic => book.GetIntroImagesStringBase64PngFromDirectory(directoryPath, amount: 3),
+				EBookType.Story => new List<string>() { book.GetIntroTextFromContent(directoryPath, amountWords: 100) },
 				_ => throw new Exception("Không có kiểu khác nữa đâu"),
-			};
+			}; 
+		}
+
+		/// <summary>
+		/// Lấy vài ảnh thôi (chắc là 3 ảnh)
+		/// </summary>
+		/// <param name="book"></param>
+		/// <param name="directoryPath"></param>
+		/// <param name="amount"></param>
+		/// <returns></returns>
+		private static List<string> GetIntroImagesStringBase64PngFromDirectory(this Book book, string directoryPath, int amount)
+		{
+			List<byte[]> images = book.ConvertImagesToByteArrays(true, directoryPath, amount);
+			if (images != null && images.Count > 0)
+				return images.Select(image => $"data:image/png;base64,{Convert.ToBase64String(image)}").ToList();
+			return new List<string>();
+		}
+
+		/// <summary>
+		/// Coi trong thư mục có thằng nào ảnh bế hết ra 
+		/// </summary>
+		/// <param name="book"></param>
+		/// <param name="directoryPath"></param>
+		/// <returns></returns>
+		private static List<string> GetImageStringBase64PngFromDirectory(this Book book, string directoryPath)
+		{
+			List<byte[]> images = book.ConvertImagesToByteArrays(true, directoryPath);
+			if (images != null && images.Count > 0)
+				return images.Select(image => $"data:image/png;base64,{Convert.ToBase64String(image)}").ToList();
+			return new List<string>();
 		}
 		/// <summary>
-		/// Dù là dạng ảnh nào thì cũng về Png để đồng nhất
-		/// Kiến trúc của js khi load đầu vào tham số (nếu là ảnh) thì sẽ là 
-		/// let base64Image = ... // The base64 string from the API
-		/// let img = new Image();
-		/// img.src = "data:image/png;base64," + base64Image;
+		/// Coi trong thư mục có thằng nào text bế hết ra rồi gộp lại (thích trả về từng phân vùng truyện theo tệp thì tách thành List<string>)
 		/// </summary>
+		/// <param name="book"></param>
+		/// <param name="directoryPath"></param>
 		/// <returns></returns>
-		private static List<string> ConvertBytesToStringsContent(this Book book)
+		private static string GetTextFromDirectory(this Book book, string directoryPath)
 		{
-			// sử dụng linq để kiểm tra nếu đủ 3 ảnh thì chuyển đổi 3 ảnh đầu, còn ít hơn thì lấy cả
-			List<byte[]> imagesFirst3 = book.ComicContent?.Count >= 3 ? book.ComicContent.Take(3).ToList() : book.ComicContent ?? new List<byte[]>();
-			return imagesFirst3.Select(content => $"data:image/png;base64,{Convert.ToBase64String(content)}").ToList() ?? new List<string>();
+			List<string> strings = book.ConvertTextToStrings(directoryPath);
+			if (strings != null && strings.Count > 0)
+				return string.Join("\n", strings);
+			return string.Empty;
 		}
 		/// <summary>
-		/// Lấy int amountWord từ đầu tiên của Content
+		/// Lây tầm 100 từ thôi 
 		/// </summary>
-		/// <param name="amountWord"></param>
+		/// <param name="book"></param>
+		/// <param name="directoryPath"></param>
+		/// <param name="amountWords"></param>
 		/// <returns></returns>
-		private static string GetIntroTextFromContent(this Book book, int amountWord = 100)
+		private static string GetIntroTextFromContent(this Book book, string directoryPath, int amountWords = 100)
 		{
-			var words = book.StoryContent?.Split(' ');
-			return string.Join(" ", words!.Take(amountWord));
+			List<string> strings = book.ConvertTextToStrings(directoryPath);
+			if (strings != null && strings.Count > 0)
+				return string.Join(" ", strings).Split(' ').Take(amountWords).Aggregate((a, b) => $"{a} {b}");
+			return string.Empty;
 		}
 		#endregion Xuất đầu ra
 
+
 		#region Thiết lập đầu vào
+		/// <summary>
+		/// Lấy toàn bộ ảnh trong đường dẫn và chuyển đổi thành byte[] (byte[] này chỉ chứa dữ liệu)
+		/// </summary>
+		/// <param name="directoryPath"></param>
+		/// <param name="amount"></param>"
+		/// <returns></returns>
+		private static List<byte[]> ConvertImagesToByteArrays(this Book book, bool isConvertToPng, string directoryPath, int amount = -1)
+		{
+			string[] imageFiles = Directory.GetFiles(directoryPath).Where(file => IsImage(file)).ToArray();
+			if (amount != -1 && imageFiles.Length > amount)
+				imageFiles = imageFiles.Take(amount).ToArray();
+			var byteArrays = imageFiles.Select(filePath =>
+			{
+				using var image = Image.FromFile(filePath);
+				return isConvertToPng ? ConvertImageToPngByteArray(image) : ConvertImageToByteArray(image);
+			}).ToList();
+			return byteArrays;
+		}
+		/// <summary>
+		/// Giống cái cùng tên nhưng thay vì lấy từ thư mục thì lấy từ đường dẫn trực tiếp của tên ảnh 
+		/// </summary>
+		/// <param name="book"></param>
+		/// <param name="isConvertToPng"></param>
+		/// <param name="filePaths"></param>
+		/// <returns></returns>
+		private static List<byte[]> ConvertImagesToByteArrays(this Book book, bool isConvertToPng, params string[] filePaths)
+		{
+			var byteArrays = filePaths.Select(filePath =>
+			{
+				using var image = Image.FromFile(filePath);
+				return isConvertToPng ? ConvertImageToPngByteArray(image) : ConvertImageToByteArray(image);
+			}).ToList();
+			return byteArrays;
+		}
+		/// <summary>
+		/// Lấy toàn bộ text trong đường dẫn và chuyển đổi thành string (string này chỉ chứa dữ liệu)
+		/// </summary>
+		/// <param name="book"></param>
+		/// <param name="directoryPath"></param>
+		/// <param name="amount"></param>
+		/// <returns></returns>
+		private static List<string> ConvertTextToStrings(this Book book, string directoryPath, int amount = -1)
+		{
+			string[] textFiles = Directory.GetFiles(directoryPath).Where(file => IsText(file)).ToArray();
+			if (amount != -1 && textFiles.Length > amount)
+				textFiles = textFiles.Take(amount).ToArray();
+			var textArrays = textFiles.Select(filePath =>
+			{
+				using var reader = new StreamReader(filePath);
+				return reader.ReadToEnd();
+			}).ToList();
+			return textArrays;
+		}
 		/// <summary>
 		/// Lưu dạng byte[] thông thường (chứa dữ liệu) cho ảnh
 		/// </summary>
 		/// <param name="image"></param>
 		/// <returns></returns>
-		public static byte[] ConvertImageToByteArray(Image image)
+		private static byte[] ConvertImageToByteArray(Image image)
 		{
 			var converter = new ImageConverter();
 			return (byte[])converter.ConvertTo(image, typeof(byte[]))!;
@@ -192,39 +284,30 @@ namespace ApiTruyenLau.Objects.Generics.Items
 		/// </summary>
 		/// <param name="image"></param>
 		/// <returns></returns>
-		public static byte[] ConvertImageToPngByteArray(Image image)
+		private static byte[] ConvertImageToPngByteArray(Image image)
 		{
 			using var mStream = new MemoryStream();
 			image.Save(mStream, ImageFormat.Png); // lưu dạng Png
 			return mStream.ToArray();
 		}
 		/// <summary>
-		/// Lấy toàn bộ ảnh trong đường dẫn và chuyển đổi thành byte[] (byte[] này chỉ chứa dữ liệu)
+		/// Check coi có phải ảnh không
 		/// </summary>
-		/// <param name="directoryPath"></param>
+		/// <param name="file"></param>
 		/// <returns></returns>
-		public static List<byte[]> ConvertImagesToByteArrays(this Book book, bool isConvertToPng, string directoryPath)
-		{
-			string[] imageFiles = Directory.GetFiles(directoryPath).Where(file => IsImage(file)).ToArray();
-			var byteArrays = imageFiles.Select(filePath =>
-			{
-				using var image = Image.FromFile(filePath);
-				return isConvertToPng ? ConvertImageToPngByteArray(image) : ConvertImageToByteArray(image);
-			}).ToList();
-			return byteArrays;
-		}
-		public static List<byte[]> ConvertImagesToByteArrays(this Book book, bool isConvertToPng, params string[] filePaths)
-		{
-			var byteArrays = filePaths.Select(filePath =>
-			{
-				using var image = Image.FromFile(filePath);
-				return isConvertToPng ? ConvertImageToPngByteArray(image) : ConvertImageToByteArray(image);
-			}).ToList();
-			return byteArrays;
-		}
 		private static bool IsImage(string file)
 		{
 			string[] extensions = new string[] { ".jpg", ".jpeg", ".png", ".gif", ".tiff", ".bmp", ".svg" };
+			return extensions.Any(x => file.EndsWith(x, StringComparison.OrdinalIgnoreCase));
+		}
+		/// <summary>
+		/// Check coi có phải text không
+		/// </summary>
+		/// <param name="file"></param>
+		/// <returns></returns>
+		private static bool IsText(string file)
+		{
+			string[] extensions = new string[] { ".txt" };//, ".doc", ".docx", ".pdf" };
 			return extensions.Any(x => file.EndsWith(x, StringComparison.OrdinalIgnoreCase));
 		}
 		#endregion Thiết lập đầu vào

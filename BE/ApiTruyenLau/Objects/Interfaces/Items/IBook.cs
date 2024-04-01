@@ -24,13 +24,16 @@ namespace ApiTruyenLau.Objects.Interfaces.Items
 
 		//public Rectangle Size { get; set; } // kích thước
 
+		// tài nguyên nội dung truyện
+		public string ContentLink { get; set; } // đường dẫn nội dung
+
+		// tài nguyên bìa sách
+		public string CoverLink { get; set; } // đường dẫn bìa sách
+
 		// đánh giá
 		public string Rating { get; set; } // đánh giá
 		public int Reader { get; set; } // số người đọc
 		public Dictionary<string, string> Viewers { get; set; } // người xem
-
-		// tài nguyên bìa 
-		public List<byte[]> CoverImages { get; set; } // ảnh bìa sách
 
 		// số bản lưu trữ trên database
 		public int NumberOfCopies { get; set; } // số bản lưu trữ

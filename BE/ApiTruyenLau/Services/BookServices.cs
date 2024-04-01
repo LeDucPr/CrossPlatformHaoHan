@@ -94,8 +94,8 @@ namespace ApiTruyenLau.Services
 				{
 					return bookCreaterCvt.ToBookCreaterCvt();
 				})
-				.ToList()
-				.ForEach(async book =>
+				.AsParallel()
+				.ForAll(async book =>
 					await _DB.GetMongoDBEntity(typeof(Item.Book)).AddMongoDBEntity(book)
 				);
 				return true;
