@@ -51,7 +51,7 @@ namespace ApiTruyenLau
 			if (env.IsDevelopment())
 			{
 				app.UseSwagger();
-				app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagSsger/v1.0.1/swagger.json", "ApiTruyenLau v1.0.1"));
+				app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1.0.1/swagger.json", "ApiTruyenLau v1.0.1"));
 			}
             app.UseCors("AllowAllOrigins");
             app.UseHttpsRedirection();
