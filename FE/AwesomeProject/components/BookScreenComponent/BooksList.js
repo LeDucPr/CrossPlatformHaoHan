@@ -1,37 +1,45 @@
 import React from 'react'
-import { Image, StyleSheet, Text, View, FlatList, TouchableOpacity, Dimensions } from 'react-native'
+import { Image, StyleSheet, Text, View, FlatList, TouchableOpacity, Dimensions, ActivityIndicator } from 'react-native'
+import { useRef, useState, useEffect, } from 'react';
+const { width: Screen_width, height: Screen_height } = Dimensions.get('window');
 
-const {width: Screen_width, height: Screen_height} = Dimensions.get('window');
-
-export default function BooksList({ navigation, Datas, Name }) {
+export default function BooksList({ navigation, Datas, Name, LoadingState }) {
+    const [isLoading, setIsLoading] = useState(LoadingState);
+    useEffect(() => {
+        setIsLoading(LoadingState);
+      }, [LoadingState]);
     return (
-        <View style = {{marginBottom: Screen_height*0.02}}>
-            <View style = {{flexDirection: 'row', alignItems: 'center', justifyContent:'space-between',  margin: Screen_width*0.025,}}>
+        <View style={{ marginBottom: Screen_height * 0.02 }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', margin: Screen_width * 0.025, }}>
                 <Text style={styles.text}>{Name}</Text>
                 <TouchableOpacity>
                     <Text>More {'>'}</Text>
                 </TouchableOpacity>
             </View>
-            <FlatList data={Datas} numColumns={2} renderItem={({ item }) => {
-                return (
-                    <TouchableOpacity onPress={() => {
-                        navigation.navigate('BookScreen', { item })
-                    }}>
-                        <View style={styles.container}>
-                            <Image style={styles.image} source={item.img} resizeMode="cover" />
-                            <Text numberOfLines={1} style={styles.textName}>{item.title}</Text>
-                        </View>
-                    </TouchableOpacity>
-                )
-            }} />
+            {isLoading ? (
+                <ActivityIndicator size="small" color="gray" />
+            ) : (
+                <FlatList data={Datas} numColumns={2} renderItem={({ item }) => {
+                    return (
+                        <TouchableOpacity onPress={() => {
+                            navigation.navigate('BookScreen', { item })
+                        }}>
+                            <View style={styles.container}>
+                                <Image style={styles.image} source={item.coverComicImagePngStrings[0]} resizeMode="cover" />
+                                <Text numberOfLines={1} style={styles.title}>{item.title}</Text>
+                            </View>
+                        </TouchableOpacity>
+                    )
+                }} />
+            )}
         </View>
     )
 }
 const styles = StyleSheet.create({
     container: {
-        width: Screen_width*0.45,
-        height: Screen_width*0.4,
-        margin: Screen_width*0.025,
+        width: Screen_width * 0.45,
+        height: Screen_width * 0.4,
+        margin: Screen_width * 0.025,
     },
     image: {
         width: '100%',

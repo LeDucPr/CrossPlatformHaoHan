@@ -1,101 +1,110 @@
 import {
-    Text,
-    View,
-    StyleSheet,
-    TextInput,
-    TouchableOpacity,
-    ImageBackground,SafeAreaView, FlatList, Dimensions, Animated,
-  } from 'react-native';
-import React, {useRef, useState, useEffect,}   from 'react';
+  Text,
+  View,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+  ImageBackground, SafeAreaView, FlatList, Dimensions, Animated, ActivityIndicator
+} from 'react-native';
+import React, { useRef, useState, useEffect, } from 'react';
 import SliderItem from './SlideItem';
 import Slides from '../../data';
 import WebLogo from '../WebLogo';
 import Pagination from './Pagination';
 
 
-  export default function Slider({navigation})  {
-    const [index, setIndex] = useState(0);
-    const scrollX = useRef(new Animated.Value(0)).current;
-    
-    const flatlistRef = useRef();
-    const screenWidth = Dimensions.get("window").width;
-    const [activeIndex, setActiveIndex] = useState(0);
+export default function Slider({ navigation, Datas, LoadingState }) {
+  const [isLoading, setIsLoading] = useState(LoadingState);
+  useEffect(() => {
+    setIsLoading(LoadingState);
+  }, [LoadingState]);
+  const [index, setIndex] = useState(0);
+  const scrollX = useRef(new Animated.Value(0)).current;
 
-    // Auto Scroll
+  const flatlistRef = useRef();
+  const screenWidth = Dimensions.get("window").width;
+  const [activeIndex, setActiveIndex] = useState(0);
 
-    useEffect(() => {
-      let interval = setInterval(() => {
-        if (index === Slides.length - 1) {
-          flatlistRef.current.scrollToIndex({
-            index: 0,
-            animation: true,
-          });
-        } else {
-          flatlistRef.current.scrollToIndex({
-            index: index + 1,
-            animation: true,
-          });
-        }
-      }, 2000);
+  // Auto Scroll
 
-      return () => clearInterval(interval);
-      });
+  useEffect(() => {
+    let interval = setInterval(() => {
+      if (index === Slides.length - 1) {
+        flatlistRef.current.scrollToIndex({
+          index: 0,
+          animation: true,
+        });
+      } else {
+        flatlistRef.current.scrollToIndex({
+          index: index + 1,
+          animation: true,
+        });
+      }
+    }, 2000);
 
-	const getItemLayout = (data, index) => ({
-		length: screenWidth,
-		offset: screenWidth * index, 
-		index: index,
-	});
+    return () => clearInterval(interval);
+  });
 
-    const handleOnScroll = event => {
-      Animated.event(
-        [
-          {
-            nativeEvent: {
-              contentOffset: {
-                x: scrollX,
-              },
+  const getItemLayout = (data, index) => ({
+    length: screenWidth,
+    offset: screenWidth * index,
+    index: index,
+  });
+
+  const handleOnScroll = event => {
+    Animated.event(
+      [
+        {
+          nativeEvent: {
+            contentOffset: {
+              x: scrollX,
             },
           },
-        ],
-        {
-          useNativeDriver: false,
         },
-      )(event);
-    };
+      ],
+      {
+        useNativeDriver: false,
+      },
+    )(event);
+  };
 
-    const handleOnViewableItemsChanged = useRef(({viewableItems}) => {
-      //console.log('viewableItems', viewableItems[0].index);
-      setIndex(viewableItems[0].index);
-    }).current;
+  const handleOnViewableItemsChanged = useRef(({ viewableItems }) => {
+    //console.log('viewableItems', viewableItems[0].index);
+    setIndex(viewableItems[0].index);
+  }).current;
 
-    const viewabilityConfig = useRef({
-      viewAreaCoveragePercentThreshold: 50,
-    }).current;
-    
-  
-    return (
+  const viewabilityConfig = useRef({
+    viewAreaCoveragePercentThreshold: 50,
+  }).current;
+
+  return (
+    <View>
+      {isLoading ? (
+        <ActivityIndicator size="small" color="gray"/>
+      ) : (
         <View>
-            <FlatList
-            data={Slides}
+          <FlatList
+            data={Datas}
             ref={flatlistRef}
-				    getItemLayout={getItemLayout}
-            renderItem={({item}) => <SliderItem item = {item} navigation={navigation}/>}
+            getItemLayout={getItemLayout}
+            renderItem={({ item }) => <SliderItem item={item} navigation={navigation} />}
             horizontal
             pagingEnabled
             snapToAlignment='center'
-            showsHorizontalScrollIndicator ={false}
+            showsHorizontalScrollIndicator={false}
             onScroll={handleOnScroll}
             onViewableItemsChanged={handleOnViewableItemsChanged}
             viewabilityConfig={viewabilityConfig}
-            />
-            <Pagination data ={Slides} scrollX = {scrollX} index = {index}/>
+          />
+          <Pagination data={Slides} scrollX={scrollX} index={index} />
         </View>
-        
-    );
-  }
-  
- 
-  
-  const styles = StyleSheet.create({
-  })
+      )}
+    </View>
+
+  );
+}
+
+
+
+const styles = StyleSheet.create({
+})

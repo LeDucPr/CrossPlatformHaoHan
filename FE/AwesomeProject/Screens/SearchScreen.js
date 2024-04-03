@@ -13,28 +13,10 @@ import {
 
   const {width: Screen_width, height: Screen_height} = Dimensions.get('window');
 
-  export default function SearchScreen ({navigation}){
+  export default function SearchScreen ({route, navigation}){
+    const { Datas } = route.params;
     const [isLoading, setIsLoading] = useState(false);
-    const [data, setData] = useState([]);
-    const [error, setError] = useState(null);
-    const [fullData, setFullData] = useState([]);
     const [searchQuery, setSearchQuery] = useState("");
-
-    // useEffect(()=>{
-    //     setIsLoading(true);
-    //     fetchData({Data});
-    // }, []);
-
-    // const fetchData = async (url) => {
-    //     try{
-    //         const respone = await fetch(url);
-    //         const json = await respone.json();
-    //         setData(json);
-    //         console.log(json);
-    //     }catch(error){
-    //         setError(error)
-    //     }
-    // }
 
     const handleSearch = (query) =>{
         setSearchQuery(query);
@@ -50,7 +32,7 @@ import {
               <Image style={styles.closeButton}source={require("../assets/closeIcon.png")}/>
             </TouchableOpacity>
           </View>
-          <SearchFilter navigation={navigation} data = {Books} input = {searchQuery} setInput = {setSearchQuery}/>
+          <SearchFilter navigation={navigation} data = {Datas} input = {searchQuery} setInput = {setSearchQuery}/>
         </SafeAreaView> 
     );
   } 

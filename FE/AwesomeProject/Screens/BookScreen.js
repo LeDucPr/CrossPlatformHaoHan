@@ -2,18 +2,19 @@ import { Text, SafeAreaView, StyleSheet, Image, Dimensions, View, ScrollView, To
 import BackButton from '../components/BackButton';
 const {width: Screen_width, height: Screen_height} = Dimensions.get('window');
 
+
 export default function BookScreen({route, navigation}) {
     const { item } = route.params;
     return (
         <SafeAreaView style = {{flex:1}}>
             <View style={styles.container}>
                 <View style= {styles.image}>
-                    <ImageBackground source={item.img}  resizeMode="cover" style = {{flex: 1, width: "100%"}}>
+                    <ImageBackground source={item.coverComicImagePngStrings[0]}  resizeMode="cover" style = {{flex: 1, width: "100%"}}>
                     <View style={styles.backConainer}>
                       <BackButton navigation ={navigation}/>
                     </View>
                     <View style={styles.titleContainer}>
-                        <Text style={styles.titletext}>{item.title}</Text>
+                        <Text numberOfLines ={3} style={styles.titletext}>{item.title}</Text>
                     </View>
                     </ImageBackground>
                 </View>
@@ -77,7 +78,7 @@ const styles = StyleSheet.create({
         fontWeight: '400',
         color: '#4B4B4B',
         borderBottomWidth: 1,
-        borderRadius:50,
+        borderRadius:20,
         borderColor: '#E2E2E2'
       },
       textAuthor:{

@@ -22,7 +22,7 @@ export default function SearchFilter({navigation, data, input, setInput}) {
               return(
                 <TouchableOpacity onPress={() => navigation.navigate("BookScreen",{item})}>
                   <View style ={styles.itemContainer}>
-                        <Image source ={item.img} style = {styles.image} resizeMode='contain'/>
+                        <Image source ={item.coverComicImagePngStrings[0]} style = {styles.image} resizeMode='contain'/>
                         <View style ={styles.infor}>
                             <Text style = {styles.textName}>{item.title}</Text>
                             <Text style ={styles.textAuthor}>{item.author}</Text>
