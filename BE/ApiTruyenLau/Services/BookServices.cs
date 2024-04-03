@@ -52,6 +52,8 @@ namespace ApiTruyenLau.Services
 					Item.Book? findedBook = findedBookObjs
 						.Select(obj => JsonConvert.DeserializeObject<Item.Book>(JsonConvert.SerializeObject(obj), settings))
 						.ToList().ElementAt(0);
+					if (findedBook != null)
+						Console.WriteLine(findedBook.CoverLink);
 					return findedBook?.ToIntroBookPartCvt()!;
 				}
 				throw new Exception($"không có quyển nào Id là {bookId}");
