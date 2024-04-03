@@ -222,8 +222,13 @@ namespace ApiTruyenLau.Objects.Generics.Items
 		/// <param name="directoryPath"></param>
 		/// <param name="amount"></param>"
 		/// <returns></returns>
-		private static List<byte[]> ConvertImagesToByteArrays(this Book book, bool isConvertToPng, string directoryPath, int amount = -1)
+		private static List<byte[]> ConvertImagesToByteArrays(this Book book, bool isConvertToPng, string directoryPath, int amount = -1, bool isUseCurrentDirectoryPath=true)
 		{
+			if (isUseCurrentDirectoryPath)
+			{
+				string baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
+				directoryPath = Path.Combine(baseDirectory, directoryPath);
+			}
 			string[] imageFiles = Directory.GetFiles(directoryPath).Where(file => IsImage(file)).ToArray();
 			if (amount != -1 && imageFiles.Length > amount)
 				imageFiles = imageFiles.Take(amount).ToArray();
@@ -257,8 +262,14 @@ namespace ApiTruyenLau.Objects.Generics.Items
 		/// <param name="directoryPath"></param>
 		/// <param name="amount"></param>
 		/// <returns></returns>
-		private static List<string> ConvertTextToStrings(this Book book, string directoryPath, int amount = -1)
+		private static List<string> ConvertTextToStrings(this Book book, string directoryPath, int amount = -1, bool isUseCurrentDirectoryPath=true)
 		{
+			if (isUseCurrentDirectoryPath)
+			{
+				string baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
+				directoryPath = Path.Combine(baseDirectory, directoryPath);
+				Console.WriteLine(directoryPath);
+			}
 			string[] textFiles = Directory.GetFiles(directoryPath).Where(file => IsText(file)).ToArray();
 			if (amount != -1 && textFiles.Length > amount)
 				textFiles = textFiles.Take(amount).ToArray();

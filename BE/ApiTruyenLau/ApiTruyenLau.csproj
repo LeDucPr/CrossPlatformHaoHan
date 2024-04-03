@@ -7,16 +7,19 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <Compile Remove="Services\Pages\**" />
+	  <Content Remove="Services\Pages\**" />
+	  <EmbeddedResource Remove="Services\Pages\**" />
+	  <None Remove="Services\Pages\**" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
 		<PackageReference Include="System.Drawing.Common" Version="8.0.3" />
 	</ItemGroup>
 
 	<ItemGroup>
 	  <ProjectReference Include="..\DataConnecion\DataConnecion.csproj" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <Folder Include="Services\Pages\" />
 	</ItemGroup>
 
 </Project>
