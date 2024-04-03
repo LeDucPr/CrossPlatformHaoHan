@@ -6,6 +6,7 @@ using System.Configuration;
 using UserCvt = ApiTruyenLau.Objects.Converters.Users;
 using ItemCvt = ApiTruyenLau.Objects.Converters.Items;
 using ApiTruyenLau.Objects.Converters.Items;
+using System.ComponentModel.DataAnnotations;
 
 namespace ApiTruyenLau.Controllers
 {
@@ -18,7 +19,7 @@ namespace ApiTruyenLau.Controllers
 		private IBookServices _bookServices;
 		private IAccountServices _accountServices;
 
-		public BookController(IBookServices bookServices, IAccountServices accountServices , ILogger<ClientController> logger, IConfiguration configuration)
+		public BookController(IBookServices bookServices, IAccountServices accountServices, ILogger<ClientController> logger, IConfiguration configuration)
 		{
 			_logger = logger;
 			_configuration = configuration;
@@ -26,6 +27,7 @@ namespace ApiTruyenLau.Controllers
 			_accountServices = accountServices; // cái này cần để lấy theo yêu cầu người dùng 
 		}
 
+		#region Phần intro sách
 		[HttpGet("GetIntroById")]
 		public async Task<ActionResult<ItemCvt.IntroBookPartCvt>> GetIntroById(string bookId)
 		{
@@ -34,10 +36,7 @@ namespace ApiTruyenLau.Controllers
 				var introBookPartCvt = await _bookServices.GetIntroById(bookId);
 				return Ok(introBookPartCvt);
 			}
-			catch (Exception ex)
-			{
-				return BadRequest(ex.Message);
-			}
+			catch (Exception ex) { return BadRequest(ex.Message); }
 		}
 
 		[HttpGet("GetIntros")]
@@ -48,24 +47,70 @@ namespace ApiTruyenLau.Controllers
 				var introBookPartCvt = await _bookServices.GetIntros(userId);
 				return Ok(introBookPartCvt);
 			}
-			catch (Exception ex)
-			{
-				return BadRequest(ex.Message);
-			}
+			catch (Exception ex) { return BadRequest(ex.Message); }
 		}
 
-		[HttpPost("CreateNewBook")]
+		[HttpPut("GetSomeByFields")] // lấy vài quyển theo fields -> intro (filter by System)
+		public async Task<ActionResult<List<ItemCvt.IntroBookPartCvt>>> GetIntroByFields([FromBody] ParamForBookIntro pbi)
+		{
+			try
+			{
+				var introBookPartCvts = await _bookServices.GetIntrosBySomething(pbi.AmountIntros, pbi.SkipIds, pbi.Fields);
+				return Ok(introBookPartCvts);
+			}
+			catch (Exception ex) { return BadRequest(ex.Message); }
+		}
+		#endregion Phần intro sách
+
+		#region Phần nội dung sách
+		[HttpGet("GetBookById")]
+		public async Task<ActionResult<ItemCvt.BookCvt>> GetBookById(string bookId)
+		{
+			try
+			{
+				var a = await _bookServices.GetBookById(bookId);
+				return Ok(a);
+			}
+			catch (Exception ex) { return BadRequest(ex.Message); }
+		}
+
+		[HttpGet("GetNextImagesForContent")]
+		public async Task<ActionResult<List<string>>> GetNextImagesForContent(string bookId, int skipImages, int takeImages)
+		{
+			try
+			{
+				var images = await _bookServices.GetNextImagesForContent(bookId, skipImages, takeImages);
+				return Ok(images);
+			}
+			catch (Exception ex) { return BadRequest(ex.Message); }
+		}
+		#endregion Phần nội dung sách
+
+
+
+		#region Phần tạo sách
+		[HttpPost("CreateNewBooks")]
 		public async Task<ActionResult<string>> CreateBooks([FromBody] List<ItemCvt.BookCreaterCvt> bookCreaterCvts)
 		{
 			try
 			{
 				await _bookServices.CreateBooks(bookCreaterCvts);
-				return Ok("Tạo sách mới thành công");
+				return Ok($"Tạo {bookCreaterCvts.Count()} sách mới thành công");
 			}
-			catch (Exception ex)
-			{
-				return BadRequest(ex.Message);
-			}
+			catch (Exception ex) { return BadRequest(ex.Message); }
 		}
+		#endregion Phần tạo sách 
+
+
+
+		#region Class nhận Api
+		public class ParamForBookIntro
+		{
+			public int AmountIntros { get; set; }
+			public List<string> SkipIds { get; set; } = new List<string>();
+			[Required]
+			public Dictionary<string, string> Fields { get; set; } = null!; 
+		}
+		#endregion Class nhận Api
 	}
 }

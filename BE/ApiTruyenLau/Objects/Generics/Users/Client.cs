@@ -16,7 +16,7 @@ namespace ApiTruyenLau.Objects.Generics.Users
 		public string Id { get; set; } = null!;
 		public List<IBook> Readed { get { return _readed; } set { _readed = value; } }  // id truyện đã đọc (được một thời gian)
 		public List<IBook> Viewed { get { return _viewed; } set { _viewed = value; } } // id truyện đã xem (chưa đọc hoặc lướt nhanh)
-		public List<ViewTime> viewTimes { get { return _viewTimes; } set { _viewTimes = value; } }
+		public List<ViewTime> ViewTimes { get { return _viewTimes; } set { _viewTimes = value; } }
 		public List<IBook> Recommend {get { return _recommend; } set { _recommend = value; } }
 	}
 }
