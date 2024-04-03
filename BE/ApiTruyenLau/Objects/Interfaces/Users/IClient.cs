@@ -12,7 +12,7 @@ namespace ApiTruyenLau.Objects.Interfaces.Users
         public string Id { get; set; }
         public List<IBook> Readed { get; set; } // id truyện đã đọc (được một thời gian)
         public List<IBook> Viewed { get; set; } // id truyện đã xem (chưa đọc hoặc lướt nhanh)
-        public List<ViewTime> viewTimes { get; set; } // thời gian xem truyện theo thể loại 
+        public List<ViewTime> ViewTimes { get; set; } // thời gian xem truyện theo thể loại 
         public List<IBook> Recommend { get; set; } // id truyện được gợi ý
     }
 }
