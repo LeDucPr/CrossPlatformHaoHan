@@ -17,37 +17,29 @@ export default function LoginScreen({ navigation }) {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [userData, setUserData] = useState(null);
 
     const handleLogin = async () => {
-      try {
-          const response = await fetch('https://localhost:7188/Client?userName=' + username + '&password=' + password, {
-              method: 'POST',
-              headers: {
-                  'Content-Type': 'application/json',
-              },
-              // body: JSON.stringify({ username, password }), // Nếu cần gửi dữ liệu dưới dạng JSON
-          });
-  
-          const data = await response.json();
-  
-          if (response.ok) {
-              // Kiểm tra kết quả từ API ở đây
-              if (data.success) {
-                  setIsLoggedIn(true);
-                  alert('Đăng nhập thành công');
-                  // Thực hiện điều gì đó sau khi đăng nhập thành công, có thể là điều hướng đến màn hình khác
-                  navigation.navigate('MainScreen');
-              } else {
-                  alert('Tên người dùng hoặc mật khẩu không chính xác');
-              }
-          } else {
-              throw new Error('Đã xảy ra lỗi khi thực hiện yêu cầu');
-          }
-      } catch (error) {
-          console.error('Lỗi:', error);
-          alert('Đã xảy ra lỗi khi thực hiện yêu cầu');
-      }
-  };
+        try {
+            const response = await fetch('https://localhost:7188/Client?userName=' + username + '&password=' + password);
+            const data = await response.json();
+
+            if (response.ok) {
+                if (data.id) { // Kiểm tra nếu tồn tại ID trong dữ liệu trả về từ API
+                    setUserData(data); // Lưu thông tin người dùng vào state
+                    setIsLoggedIn(true);
+                    navigation.navigate('MainScreen');
+                } else {
+                    alert('Tên người dùng hoặc mật khẩu không chính xác');
+                }
+            } else {
+                throw new Error('Đã xảy ra lỗi khi thực hiện yêu cầu');
+            }
+        } catch (error) {
+            console.error('Lỗi:', error);
+            alert('Đã xảy ra lỗi khi thực hiện yêu cầu');
+        }
+    };
 
     return (
         <SafeAreaView style={{ flex: 1 }}>
@@ -73,7 +65,7 @@ export default function LoginScreen({ navigation }) {
                             value={password}
                             onChangeText={text => setPassword(text)}
                         />
-                        <TouchableOpacity style={styles.buttonLogin} onPress={handleLogin} onPressOut={() => navigation.navigate('MainScreen')}>
+                        <TouchableOpacity style={styles.buttonLogin} onPress={handleLogin}>
                             <Text style={styles.loginTxt}>Login</Text>
                         </TouchableOpacity>
                         <Text style={[styles.loginTxt, { marginTop: 20, textAlign: "center" }]}>Don't have an account?</Text>
@@ -86,7 +78,6 @@ export default function LoginScreen({ navigation }) {
         </SafeAreaView>
     );
 }
-
 
 const styles = StyleSheet.create({
     rootContainer: {
