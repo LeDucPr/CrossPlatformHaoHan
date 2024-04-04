@@ -1,4 +1,4 @@
-﻿using ApiTruyenLau.Objects.Extensions.Items;
+using ApiTruyenLau.Objects.Extensions.Items;
 using ApiTruyenLau.Objects.Generics.Items;
 
 namespace ApiTruyenLau.Objects.Converters.Items

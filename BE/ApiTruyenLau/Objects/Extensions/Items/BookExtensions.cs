@@ -1,4 +1,4 @@
-﻿using ApiTruyenLau.Objects.Generics.Items;
+using ApiTruyenLau.Objects.Generics.Items;
 using System.Drawing.Imaging;
 using System.Drawing;
 using System.IO;
@@ -56,6 +56,7 @@ namespace ApiTruyenLau.Objects.Extensions.Items
 		public static List<string> GetImageAtElementsStringBase64Png(this Book book, int skipAmount, int takeAmount = 0, int percentSize = 100, int quality = 100)
 		{
 			var bArrays = book.SkipAndNextImages(book.ContentLink, skipAmount, takeAmount, percentSize: percentSize, quality: quality);
+
 			if (bArrays != null && bArrays.Count > 0)
 				return bArrays.Select(image => $"data:image/png;base64,{Convert.ToBase64String(image)}").ToList();
 			return new List<string>();
@@ -87,6 +88,7 @@ namespace ApiTruyenLau.Objects.Extensions.Items
 		private static List<string> GetIntroImagesStringBase64PngFromDirectory(this Book book, string directoryPath, int amount, int percentSize = 100, int quality = 100)
 		{
 			List<byte[]> images = book.ConvertImagesToByteArrays(true, directoryPath, amount, percentSize: percentSize, quality: quality);
+
 			if (images != null && images.Count > 0)
 				return images.Select(image => $"data:image/png;base64,{Convert.ToBase64String(image)}").ToList();
 			return new List<string>();
@@ -158,6 +160,7 @@ namespace ApiTruyenLau.Objects.Extensions.Items
 				using var image = Image.FromFile(filePath);
 				var resizeImage = image.ResizeImage(percentSize, quality);
 				return isConvertToPng ? ConvertImageToPngByteArray(resizeImage) : ConvertImageToByteArray(resizeImage);
+
 			}).ToList();
 			return byteArrays;
 		}
@@ -171,6 +174,7 @@ namespace ApiTruyenLau.Objects.Extensions.Items
 		/// <param name="isUseCurrentDirectoryPath"></param>
 		/// <returns></returns>
 		private static List<byte[]> SkipAndNextImages(this Book book, string directoryPath, int skipAmount, int takeAmount = 0, bool isUseCurrentDirectoryPath = true, int percentSize = 100, int quality = 100)
+
 		{
 			if (isUseCurrentDirectoryPath)
 			{
@@ -181,6 +185,7 @@ namespace ApiTruyenLau.Objects.Extensions.Items
 			//if (imageFiles.Length > skipAmount + takeAmount) { }
 			imageFiles = imageFiles.Skip(skipAmount-1).Take(takeAmount).ToArray(); // bình thường được lấy từ 0, còn theo số lượng thì luôn đếm từ 1
 			return book.ConvertImagesToByteArrays(true, percentSize, quality, imageFiles);
+
 			//return new List<byte[]>(); // không còn ảnh nào
 		}
 		/// <summary>
