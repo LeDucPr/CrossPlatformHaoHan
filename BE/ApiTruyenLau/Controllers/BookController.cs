@@ -27,6 +27,19 @@ namespace ApiTruyenLau.Controllers
 			_accountServices = accountServices; // cái này cần để lấy theo yêu cầu người dùng 
 		}
 
+		#region Phần bìa sách 
+		[HttpGet("GetCoverById")]
+		public async Task<ActionResult<ItemCvt.CoverBookCvt>> GetCoverById(string bookId)
+		{
+			try
+			{
+				var coverBookCvt = await _bookServices.GetCoverById(bookId);
+				return Ok(coverBookCvt);
+			}
+			catch (Exception ex) { return BadRequest(ex.Message); }
+		}
+		#endregion Phần bìa sách
+
 		#region Phần intro sách
 		[HttpGet("GetIntroById")]
 		public async Task<ActionResult<ItemCvt.IntroBookPartCvt>> GetIntroById(string bookId)
@@ -86,8 +99,6 @@ namespace ApiTruyenLau.Controllers
 		}
 		#endregion Phần nội dung sách
 
-
-
 		#region Phần tạo sách
 		[HttpPost("CreateNewBooks")]
 		public async Task<ActionResult<string>> CreateBooks([FromBody] List<ItemCvt.BookCreaterCvt> bookCreaterCvts)
@@ -102,14 +113,13 @@ namespace ApiTruyenLau.Controllers
 		#endregion Phần tạo sách 
 
 
-
 		#region Class nhận Api
 		public class ParamForBookIntro
 		{
 			public int AmountIntros { get; set; }
 			public List<string> SkipIds { get; set; } = new List<string>();
 			[Required]
-			public Dictionary<string, string> Fields { get; set; } = null!; 
+			public Dictionary<string, string> Fields { get; set; } = null!;
 		}
 		#endregion Class nhận Api
 	}

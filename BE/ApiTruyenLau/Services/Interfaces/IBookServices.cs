@@ -5,6 +5,10 @@ namespace ApiTruyenLau.Services.Interfaces
 {
 	public interface IBookServices
 	{
+		#region Phần bìa sách 
+		public Task<ItemCvt.CoverBookCvt> GetCoverById(string bookId);
+		#endregion Phần bìa sách
+
 		#region Phần intro sách
 		public Task<ItemCvt.IntroBookPartCvt> GetIntroById(string bookId); 
 		// có thể lấy theo ngẫu nhiên hoặc theo tương tác của người dùng 

@@ -29,6 +29,41 @@ namespace ApiTruyenLau.Services
 			//this._DB.GetMongoDBEntity(typeof(User.Client)).Indexs();
 		}
 
+		// mục đích thiết kế phần bìa và intro riêng lẻ liên quan tới một số vấn đề lưu trữ tại máy người dùng (guest)
+
+		#region Phần bìa sách
+		/// <summary>
+		/// Trả về bìa sách theo Id
+		/// </summary>
+		/// <param name="bookId"></param>
+		/// <returns></returns>
+		/// <exception cref="Exception"></exception>
+		public async Task<ItemCvt.CoverBookCvt> GetCoverById(string bookId)
+		{
+			try
+			{
+				var findedBookObjs = await _DB.GetMongoDBEntity(typeof(Item.Book)).FindObjects(new Dictionary<string, string>()
+				{
+					{ nameof(Item.Book.Id), bookId}
+				});
+				if (findedBookObjs != null && findedBookObjs.Count > 0)
+				{
+					var settings = new JsonSerializerSettings
+					{
+						MissingMemberHandling = MissingMemberHandling.Ignore,
+						SerializationBinder = new MySerializationBinderBook()
+					};
+					Item.Book? findedBook = findedBookObjs
+						.Select(obj => JsonConvert.DeserializeObject<Item.Book>(JsonConvert.SerializeObject(obj), settings))
+						.ToList().ElementAt(0);
+					return findedBook?.ToCoverBookCvt()!;
+				}
+				throw new Exception($"không có quyển nào Id là {bookId}");
+			}
+			catch (Exception ex) { throw new Exception(ex.Message); }
+		}
+		#endregion Phần bìa sách 
+
 		#region Phần intro sách
 		/// <summary>
 		/// Lúc này là hiện ra một số ô trưng bày sách rồi nhấn vô là nó gửi về bookId 
@@ -55,8 +90,6 @@ namespace ApiTruyenLau.Services
 					Item.Book? findedBook = findedBookObjs
 						.Select(obj => JsonConvert.DeserializeObject<Item.Book>(JsonConvert.SerializeObject(obj), settings))
 						.ToList().ElementAt(0);
-					if (findedBook != null)
-						Console.WriteLine(findedBook.CoverLink);
 					return findedBook?.ToIntroBookPartCvt()!;
 				}
 				throw new Exception($"không có quyển nào Id là {bookId}");
@@ -155,8 +188,6 @@ namespace ApiTruyenLau.Services
 					Item.Book? findedBook = findedBookObjs
 						.Select(obj => JsonConvert.DeserializeObject<Item.Book>(JsonConvert.SerializeObject(obj), settings))
 						.ToList().ElementAt(0);
-					if (findedBook != null)
-						Console.WriteLine(findedBook.CoverLink);
 					return findedBook?.ToBookCvt()!;
 				}
 				throw new NotImplementedException();
