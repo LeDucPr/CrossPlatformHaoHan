@@ -1,6 +1,8 @@
-﻿using ApiTruyenLau.Objects.Generics.Items;
+using ApiTruyenLau.Objects.Generics.Items;
 using System.Drawing.Imaging;
 using System.Drawing;
+using System.IO;
+using System.Linq;
 
 namespace ApiTruyenLau.Objects.Extensions.Items
 {
@@ -37,23 +39,24 @@ namespace ApiTruyenLau.Objects.Extensions.Items
 		/// <param name="book"></param>
 		/// <param name="directoryPath"></param>
 		/// <returns></returns>
-		public static (List<string> comicImagePngStrings, string textString) GetIntro(this Book book, int amountImages = 3, int amountWords = 100)
+		public static (List<string> comicImagePngStrings, string textString) GetIntro(this Book book, int amountImages = 3, int amountWords = 100, int percentSize = 80, int quality = 100)
 		{
-			return (book.GetIntroImagesStringBase64PngFromDirectory(book.ContentLink, amountImages), book.GetIntroTextFromContent(book.ContentLink, amountWords));
+			return (book.GetIntroImagesStringBase64PngFromDirectory(book.ContentLink, amountImages, percentSize, quality), book.GetIntroTextFromContent(book.ContentLink, amountWords));
 		}
 
-		public static (List<string> comicImagePngStrings, string textString) GetCover(this Book book)
+		public static (List<string> comicImagePngStrings, string textString) GetCover(this Book book, int percentSize = 40, int quality = 100)
 		{
-			return (book.GetImageStringBase64PngFromDirectory(book.CoverLink), book.GetTextFromDirectory(book.CoverLink));
+			return (book.GetImageStringBase64PngFromDirectory(book.CoverLink, percentSize, quality), book.GetTextFromDirectory(book.CoverLink));
 		}
 
-		public static (List<string> comicImagePngStrings, string textString) GetContent(this Book book)
+		public static (List<string> comicImagePngStrings, string textString) GetContent(this Book book, int percentSize = 100, int quality = 100)
 		{
-			return (book.GetImageStringBase64PngFromDirectory(book.ContentLink), book.GetTextFromDirectory(book.ContentLink));
+			return (book.GetImageStringBase64PngFromDirectory(book.ContentLink, percentSize, quality), book.GetTextFromDirectory(book.ContentLink));
 		}
-		public static List<string> GetImageAtElementsStringBase64Png(this Book book, int skipAmount, int takeAmount = 0)
+		public static List<string> GetImageAtElementsStringBase64Png(this Book book, int skipAmount, int takeAmount = 0, int percentSize = 100, int quality = 100)
 		{
-			var bArrays = book.SkipAndNextImages(book.ContentLink, skipAmount, takeAmount);
+			var bArrays = book.SkipAndNextImages(book.ContentLink, skipAmount, takeAmount, percentSize: percentSize, quality: quality);
+
 			if (bArrays != null && bArrays.Count > 0)
 				return bArrays.Select(image => $"data:image/png;base64,{Convert.ToBase64String(image)}").ToList();
 			return new List<string>();
@@ -82,9 +85,10 @@ namespace ApiTruyenLau.Objects.Extensions.Items
 		/// <param name="directoryPath"></param>
 		/// <param name="amount"></param>
 		/// <returns></returns>
-		private static List<string> GetIntroImagesStringBase64PngFromDirectory(this Book book, string directoryPath, int amount)
+		private static List<string> GetIntroImagesStringBase64PngFromDirectory(this Book book, string directoryPath, int amount, int percentSize = 100, int quality = 100)
 		{
-			List<byte[]> images = book.ConvertImagesToByteArrays(true, directoryPath, amount);
+			List<byte[]> images = book.ConvertImagesToByteArrays(true, directoryPath, amount, percentSize: percentSize, quality: quality);
+
 			if (images != null && images.Count > 0)
 				return images.Select(image => $"data:image/png;base64,{Convert.ToBase64String(image)}").ToList();
 			return new List<string>();
@@ -95,9 +99,9 @@ namespace ApiTruyenLau.Objects.Extensions.Items
 		/// <param name="book"></param>
 		/// <param name="directoryPath"></param>
 		/// <returns></returns>
-		private static List<string> GetImageStringBase64PngFromDirectory(this Book book, string directoryPath)
+		private static List<string> GetImageStringBase64PngFromDirectory(this Book book, string directoryPath, int percentSize = 100, int quality = 100)
 		{
-			List<byte[]> images = book.ConvertImagesToByteArrays(true, directoryPath);
+			List<byte[]> images = book.ConvertImagesToByteArrays(true, directoryPath, percentSize: percentSize, quality: quality);
 			if (images != null && images.Count > 0)
 				return images.Select(image => $"data:image/png;base64,{Convert.ToBase64String(image)}").ToList();
 			return new List<string>();
@@ -141,7 +145,7 @@ namespace ApiTruyenLau.Objects.Extensions.Items
 		/// <param name="amount"></param>"
 		/// <param name="isUseCurrentDirectoryPath">sử dụng đường dẫn trực tiếp đọc dữ liệu</param>
 		/// <returns></returns>
-		private static List<byte[]> ConvertImagesToByteArrays(this Book book, bool isConvertToPng, string directoryPath, int amount = -1, bool isUseCurrentDirectoryPath = true)
+		private static List<byte[]> ConvertImagesToByteArrays(this Book book, bool isConvertToPng, string directoryPath, int amount = -1, bool isUseCurrentDirectoryPath = true, int percentSize = 100, int quality = 100)
 		{
 			if (isUseCurrentDirectoryPath)
 			{
@@ -154,7 +158,9 @@ namespace ApiTruyenLau.Objects.Extensions.Items
 			var byteArrays = imageFiles.Select(filePath =>
 			{
 				using var image = Image.FromFile(filePath);
-				return isConvertToPng ? ConvertImageToPngByteArray(image) : ConvertImageToByteArray(image);
+				var resizeImage = image.ResizeImage(percentSize, quality);
+				return isConvertToPng ? ConvertImageToPngByteArray(resizeImage) : ConvertImageToByteArray(resizeImage);
+
 			}).ToList();
 			return byteArrays;
 		}
@@ -167,7 +173,8 @@ namespace ApiTruyenLau.Objects.Extensions.Items
 		/// <param name="takeAmount"></param>
 		/// <param name="isUseCurrentDirectoryPath"></param>
 		/// <returns></returns>
-		private static List<byte[]> SkipAndNextImages(this Book book, string directoryPath, int skipAmount, int takeAmount = 0, bool isUseCurrentDirectoryPath = true)
+		private static List<byte[]> SkipAndNextImages(this Book book, string directoryPath, int skipAmount, int takeAmount = 0, bool isUseCurrentDirectoryPath = true, int percentSize = 100, int quality = 100)
+
 		{
 			if (isUseCurrentDirectoryPath)
 			{
@@ -176,8 +183,9 @@ namespace ApiTruyenLau.Objects.Extensions.Items
 			}
 			string[] imageFiles = Directory.GetFiles(directoryPath).Where(file => IsImage(file)).ToArray();
 			//if (imageFiles.Length > skipAmount + takeAmount) { }
-			imageFiles = imageFiles.Skip(skipAmount).Take(takeAmount).ToArray();
-			return book.ConvertImagesToByteArrays(true, imageFiles);
+			imageFiles = imageFiles.Skip(skipAmount-1).Take(takeAmount).ToArray(); // bình thường được lấy từ 0, còn theo số lượng thì luôn đếm từ 1
+			return book.ConvertImagesToByteArrays(true, percentSize, quality, imageFiles);
+
 			//return new List<byte[]>(); // không còn ảnh nào
 		}
 		/// <summary>
@@ -187,12 +195,14 @@ namespace ApiTruyenLau.Objects.Extensions.Items
 		/// <param name="isConvertToPng"></param>
 		/// <param name="filePaths"></param>
 		/// <returns></returns>
-		private static List<byte[]> ConvertImagesToByteArrays(this Book book, bool isConvertToPng, params string[] filePaths)
+		private static List<byte[]> ConvertImagesToByteArrays(this Book book, bool isConvertToPng, int percentSize, int quality, params string[] filePaths)
 		{
 			var byteArrays = filePaths.Select(filePath =>
 			{
 				using var image = Image.FromFile(filePath);
-				return isConvertToPng ? ConvertImageToPngByteArray(image) : ConvertImageToByteArray(image);
+				var resizeImage = image.ResizeImage(percentSize, quality); // resize ảnh
+				var byteImage = isConvertToPng ? ConvertImageToPngByteArray(resizeImage) : ConvertImageToByteArray(resizeImage);
+				return byteImage;
 			}).ToList();
 			return byteArrays;
 		}
@@ -243,6 +253,40 @@ namespace ApiTruyenLau.Objects.Extensions.Items
 			image.Save(mStream, ImageFormat.Png); // lưu dạng Png
 			return mStream.ToArray();
 		}
+		/// <summary>
+		/// Resize kích thước ảnh và chất lượng ảnh
+		/// </summary>
+		/// <param name="image"></param>
+		/// <param name="percentSize"></param>
+		/// <param name="quality"></param>
+		/// <returns></returns>
+		private static Image ResizeImage(this Image image, int percentSize = 100, int quality = 100)
+		{
+			// Calculate new dimensions
+			int newWidth = (int)(image.Width * percentSize / 100.0);
+			int newHeight = (int)(image.Height * percentSize / 100.0);
+
+			// Create new image with new dimensions
+			var newImage = new Bitmap(newWidth, newHeight);
+
+			using (var graphics = Graphics.FromImage(newImage))
+			{
+				graphics.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.HighQuality;
+				graphics.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+				graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
+				graphics.DrawImage(image, 0, 0, newWidth, newHeight);
+			}
+			var encoderParameters = new EncoderParameters(1); // thiết lập chất lượng ảnh
+			encoderParameters.Param[0] = new EncoderParameter(System.Drawing.Imaging.Encoder.Quality, quality);
+			var codecInfo = ImageCodecInfo.GetImageDecoders().FirstOrDefault(codec => codec.FormatID == ImageFormat.Png.Guid); // Lấy codec của ảnh PNG
+			var ms = new MemoryStream();
+			// Lưu rồi chuyển vào memory stream
+			newImage.Save(ms, codecInfo!, encoderParameters);
+			var resizedImage = Image.FromStream(ms);
+			return resizedImage;
+		}
+
+
 		/// <summary>
 		/// Check coi có phải ảnh không
 		/// </summary>
