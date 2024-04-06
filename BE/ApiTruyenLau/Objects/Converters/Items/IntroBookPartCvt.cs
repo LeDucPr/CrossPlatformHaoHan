@@ -28,10 +28,10 @@ namespace ApiTruyenLau.Objects.Converters.Items
 	public static class IntroBookPartCvtExtensions
 	{
 
-		public static IntroBookPartCvt ToIntroBookPartCvt(this Book book)
+		public static IntroBookPartCvt ToIntroBookPartCvt(this Book book, int amount)
 		{
 			(List<string> coverComicImagePngStrings, string coverTextString) = book.GetCover();
-			(List<string> introComicImagePngStrings, string introTextString) = book.GetIntro();
+			(List<string> introComicImagePngStrings, string introTextString) = book.GetIntro(amountImages:amount);
 			IntroBookPartCvt introBookPartCvt = new IntroBookPartCvt();
 			introBookPartCvt.Id = book.Id;
 			introBookPartCvt.Author = book.Author;
@@ -51,5 +51,6 @@ namespace ApiTruyenLau.Objects.Converters.Items
 			introBookPartCvt.Viewers = book.Viewers;
 			return introBookPartCvt;
 		}
+
 	}
 }

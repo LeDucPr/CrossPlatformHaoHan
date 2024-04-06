@@ -29,11 +29,11 @@ namespace ApiTruyenLau.Controllers
 
 		#region Phần intro sách
 		[HttpGet("GetIntroById")]
-		public async Task<ActionResult<ItemCvt.IntroBookPartCvt>> GetIntroById(string bookId)
+		public async Task<ActionResult<ItemCvt.IntroBookPartCvt>> GetIntroById(string bookId, int amountPage)
 		{
 			try
 			{
-				var introBookPartCvt = await _bookServices.GetIntroById(bookId);
+				var introBookPartCvt = await _bookServices.GetIntroById(bookId, amountPage);
 				return Ok(introBookPartCvt);
 			}
 			catch (Exception ex) { return BadRequest(ex.Message); }
@@ -55,7 +55,7 @@ namespace ApiTruyenLau.Controllers
 		{
 			try
 			{
-				var introBookPartCvts = await _bookServices.GetIntrosBySomething(pbi.AmountIntros, pbi.SkipIds, pbi.Fields);
+				var introBookPartCvts = await _bookServices.GetIntrosBySomething(pbi.AmountIntros, pbi.SkipIds, pbi.Fields, pbi.AmountPages);
 				return Ok(introBookPartCvts);
 			}
 			catch (Exception ex) { return BadRequest(ex.Message); }
@@ -110,6 +110,7 @@ namespace ApiTruyenLau.Controllers
 			public List<string> SkipIds { get; set; } = new List<string>();
 			[Required]
 			public Dictionary<string, string> Fields { get; set; } = null!; 
+			public int AmountPages {  get; set; }
 		}
 		#endregion Class nhận Api
 	}

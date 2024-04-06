@@ -37,7 +37,7 @@ namespace ApiTruyenLau.Services
 		/// <param name="bookId"></param>
 		/// <returns></returns>
 		/// <exception cref="Exception"></exception>
-		public async Task<ItemCvt.IntroBookPartCvt> GetIntroById(string bookId)
+		public async Task<ItemCvt.IntroBookPartCvt> GetIntroById(string bookId, int amountPage)
 		{
 			try
 			{
@@ -57,20 +57,47 @@ namespace ApiTruyenLau.Services
 						.ToList().ElementAt(0);
 					if (findedBook != null)
 						Console.WriteLine(findedBook.CoverLink);
-					return findedBook?.ToIntroBookPartCvt()!;
+					return findedBook?.ToIntroBookPartCvt(amount: amountPage)!;
 				}
 				throw new Exception($"không có quyển nào Id là {bookId}");
 			}
 			catch (Exception ex) { throw new Exception(ex.Message); }
 		}
 
-		/// <summary>
-		/// Theo lsy thuyết thì nó phân tích hành vi người dùng và trả về một số bản intro tương ứng với sở thích 
-		/// {Còn hiện tại mấy bố làm Data lâu VL nên thôi cái này tạm thời bỏ qua}
-		/// </summary>
-		/// <returns></returns>
-		/// <exception cref="Exception"></exception>
-		public async Task<ItemCvt.IntroBookPartCvt> GetIntros(string userId) /////////////////////////////// データをすばやく作成します。
+        public async Task<ItemCvt.IntroBookPartCvt> GetIntroById2(string bookId, int amount )
+        {
+            try
+            {
+                var findedBookObjs = await _DB.GetMongoDBEntity(typeof(Item.Book)).FindObjects(new Dictionary<string, string>()
+                {
+                    { nameof(Item.Book.Id), bookId}
+                });
+                if (findedBookObjs != null && findedBookObjs.Count > 0)
+                {
+                    var settings = new JsonSerializerSettings
+                    {
+                        MissingMemberHandling = MissingMemberHandling.Ignore,
+                        SerializationBinder = new MySerializationBinderBook()
+                    };
+                    Item.Book? findedBook = findedBookObjs
+                        .Select(obj => JsonConvert.DeserializeObject<Item.Book>(JsonConvert.SerializeObject(obj), settings))
+                        .ToList().ElementAt(0);
+                    if (findedBook != null)
+                        Console.WriteLine(findedBook.CoverLink);
+                    return findedBook?.ToIntroBookPartCvt(amount: amount)!;
+                }
+                throw new Exception($"không có quyển nào Id là {bookId}");
+            }
+            catch (Exception ex) { throw new Exception(ex.Message); }
+        }
+
+        /// <summary>
+        /// Theo lsy thuyết thì nó phân tích hành vi người dùng và trả về một số bản intro tương ứng với sở thích 
+        /// {Còn hiện tại mấy bố làm Data lâu VL nên thôi cái này tạm thời bỏ qua}
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public async Task<ItemCvt.IntroBookPartCvt> GetIntros(string userId) /////////////////////////////// データをすばやく作成します。
 		{
 			try
 			{
@@ -95,7 +122,7 @@ namespace ApiTruyenLau.Services
 		/// <param name="bookFields"></param>
 		/// <returns></returns>
 		/// <exception cref="Exception"></exception>
-		public async Task<List<ItemCvt.IntroBookPartCvt>> GetIntrosBySomething(int amountIntros, List<string> skipIds, Dictionary<string, string> bookFields)
+		public async Task<List<ItemCvt.IntroBookPartCvt>> GetIntrosBySomething(int amountIntros, List<string> skipIds, Dictionary<string, string> bookFields, int amountPage)
 		{
 			try
 			{
@@ -120,7 +147,7 @@ namespace ApiTruyenLau.Services
 						.ToList();
 					var filteredBooks = findedBooks.Where(book => !skipIds.Contains(book!.Id)); // Bỏ qua các cuốn sách có Id nằm trong skips
 					var resultBooks = filteredBooks.Take(amountIntros).ToList(); // ít hơn thì lấy tất 
-					return resultBooks.Select(book => book?.ToIntroBookPartCvt()).ToList()!; // không còn sách thì trả về lỗi hết sách 
+					return resultBooks.Select(book => book?.ToIntroBookPartCvt(amount: amountPage)).ToList()!; // không còn sách thì trả về lỗi hết sách 
 				}
 				throw new Exception("Không có sách nào");
 			}

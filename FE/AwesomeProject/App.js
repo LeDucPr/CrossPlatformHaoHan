@@ -1,5 +1,5 @@
 import { Text, View, StyleSheet, TextInput, TouchableOpacity, Image, Button, ImageBackground, Dimensions, Pressable } from 'react-native';
-import React, {useRef, useState, useEffect,}   from 'react';
+import React, { useRef, useState, useEffect, } from 'react';
 import { NavigationContainer, DefaultTheme, } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
@@ -11,6 +11,7 @@ import SearchScreen from './Screens/SearchScreen';
 import BookScreen from './Screens/BookScreen';
 import fetchIntroData from './fetchData/test';
 import Datas from './data';
+import fetchDataFromFields from './fetchData/FetchFromFields';
 
 const Stack = createNativeStackNavigator()
 //const Stack = createBottomTabNavigator()
@@ -31,6 +32,23 @@ const MyTheme = {
   },
 };
 export default function App() {
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const amountIntros = 3;
+        const skipIds = [""];
+        const fields = {
+          author: "Kawahara Reki"
+        };
+        const data = await fetchDataFromFields(amountIntros, skipIds, fields);
+        console.log(data);
+      } catch (error) {
+        console.error('Error fetching intro data:', error);
+      }
+    };
+    fetchData();
+  }, []);
   return (
     <NavigationContainer theme={MyTheme}>
       <Stack.Navigator screenOptions={{

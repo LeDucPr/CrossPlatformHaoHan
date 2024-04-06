@@ -1,0 +1,1 @@
+export const urlHeader = 'https://localhost:7188'

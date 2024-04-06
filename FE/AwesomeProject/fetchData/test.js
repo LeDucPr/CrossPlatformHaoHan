@@ -1,5 +1,7 @@
-async function fetchDataById(id) {
-    const url = `https://localhost:7188/Book/GetIntroById?bookId=${id}`;
+import { urlHeader } from "../SetUp";
+
+async function fetchDataById(id, amount) {
+    const url = `${urlHeader}/Book/GetIntroById?bookId=${id}&amountPage=${amount}`;
 
     try {
         const response = await fetch(url);
@@ -21,7 +23,7 @@ export default async function fetchIntroData(quantity) {
         const idString = idNumber.toString().padStart(4, '0');
         return idString;
     });
-    const fetchPromises = ids.map((id) => fetchDataById(id));
+    const fetchPromises = ids.map((id) => fetchDataById(id, 0));
     try {
         const introData = await Promise.all(fetchPromises);
 
@@ -31,3 +33,5 @@ export default async function fetchIntroData(quantity) {
         throw error;
     }
 }
+
+

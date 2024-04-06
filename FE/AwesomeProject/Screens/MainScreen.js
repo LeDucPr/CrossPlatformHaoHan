@@ -23,7 +23,6 @@ export default function MainScreen({ navigation }) {
     const fetchData = async () => {
       try {
         const data = await fetchIntroData(8);
-        console.log(data);
         setIntroData(data);
         setIsLoading(false);
       } catch (error) {

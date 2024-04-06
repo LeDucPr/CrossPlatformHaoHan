@@ -6,10 +6,10 @@ namespace ApiTruyenLau.Services.Interfaces
 	public interface IBookServices
 	{
 		#region Phần intro sách
-		public Task<ItemCvt.IntroBookPartCvt> GetIntroById(string bookId); 
+		public Task<ItemCvt.IntroBookPartCvt> GetIntroById(string bookId, int amountPage); 
 		// có thể lấy theo ngẫu nhiên hoặc theo tương tác của người dùng 
 		public Task<ItemCvt.IntroBookPartCvt> GetIntros(string userId);
-		public Task<List<ItemCvt.IntroBookPartCvt>> GetIntrosBySomething(int amountIntros, List<string> skipIds, Dictionary<string, string> bookFields);
+		public Task<List<ItemCvt.IntroBookPartCvt>> GetIntrosBySomething(int amountIntros, List<string> skipIds, Dictionary<string, string> bookFields, int amountPage);
 		#endregion Phần intro sách
 
 		#region Nội dung sách 
