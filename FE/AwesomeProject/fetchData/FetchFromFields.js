@@ -1,6 +1,6 @@
 import { urlHeader } from "../SetUp";
 
-export default async function fetchDataFromFields(amountIntros, skipIds, fields) {
+export default async function fetchDataFromFields(amountIntros, skipIds, fields, amountPages) {
     const url = `${urlHeader}/Book/GetSomeByFields`;
     const options = {
       method: 'PUT',
@@ -11,7 +11,8 @@ export default async function fetchDataFromFields(amountIntros, skipIds, fields)
       body: JSON.stringify({
         amountIntros: amountIntros,
         skipIds: skipIds,
-        fields: fields
+        fields: fields,
+        amountPages: amountPages
       })
     };
   

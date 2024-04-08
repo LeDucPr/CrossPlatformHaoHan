@@ -30,7 +30,7 @@ export default function SearchScreen({ route, navigation }) {
     if (event.key === 'Enter') {
       setSearchQuery(tempSearchQuery);
       setIsEnterPressed(true);
-      FindBooks();
+      // FindBooks();
     }
   };
 

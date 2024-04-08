@@ -2,7 +2,6 @@ import { urlHeader } from "../SetUp";
 
 async function fetchDataById(id, amount) {
     const url = `${urlHeader}/Book/GetIntroById?bookId=${id}&amountPage=${amount}`;
-
     try {
         const response = await fetch(url);
         if (!response.ok) {

@@ -9,9 +9,11 @@ import DashBoardScreen from './Screens/DashBoardScreen';
 import MainScreen from './Screens/MainScreen';
 import SearchScreen from './Screens/SearchScreen';
 import BookScreen from './Screens/BookScreen';
+import ReadScreen from './Screens/ReadScreen';
 import fetchIntroData from './fetchData/test';
 import Datas from './data';
 import fetchDataFromFields from './fetchData/FetchFromFields';
+import getImagesForBook from './fetchData/FetchImagesById';
 
 const Stack = createNativeStackNavigator()
 //const Stack = createBottomTabNavigator()
@@ -41,7 +43,8 @@ export default function App() {
         const fields = {
           author: "Kawahara Reki"
         };
-        const data = await fetchDataFromFields(amountIntros, skipIds, fields);
+        const amountPages = 0
+        const data = await fetchDataFromFields(amountIntros, skipIds, fields, amountPages);
         console.log(data);
       } catch (error) {
         console.error('Error fetching intro data:', error);
@@ -49,6 +52,7 @@ export default function App() {
     };
     fetchData();
   }, []);
+
   return (
     <NavigationContainer theme={MyTheme}>
       <Stack.Navigator screenOptions={{
@@ -60,6 +64,7 @@ export default function App() {
           <Stack.Screen name="Register" component={RegisterScreen} /> */}
         <Stack.Screen name="Search" component={SearchScreen} />
         <Stack.Screen name="BookScreen" component={BookScreen} />
+        <Stack.Screen name="ReadScreen" component={ReadScreen} />
       </Stack.Navigator>
     </NavigationContainer>
 
