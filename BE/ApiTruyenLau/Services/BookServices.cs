@@ -62,6 +62,86 @@ namespace ApiTruyenLau.Services
 			}
 			catch (Exception ex) { throw new Exception(ex.Message); }
 		}
+
+		/// <summary>
+		/// Mỗi một thông điệp gửi 1 yêu cầu (ví dụ: genre thì chỉ lấy 1 kiểu cố định, không lấy theo nhiều loại cùng lúc) 
+		/// </summary>
+		/// <param name="amountIntros"></param>
+		/// <param name="bookFields"></param>
+		/// <returns></returns>
+		/// <exception cref="Exception"></exception>
+		public async Task<List<ItemCvt.CoverBookCvt>> GetCoversByFieldsEquals(int amountCovers, List<string> skipIds, Dictionary<string, string> bookFields)
+		{
+			try
+			{
+				// bookFields của Api trả về có thể sẽ liên quan tới vấn đề viết hoa viết thường
+				// Chuyển tất cả các key trong bookFields về lowercase và đem đối chiếu với Properties của Book ở dạng lower case 
+				var lowerCaseBookFields = bookFields.ToDictionary(entry => entry.Key.ToLower(), entry => entry.Value);
+				var bookProperties = typeof(Item.Book).GetProperties().ToDictionary(prop => prop.Name.ToLower(), prop => prop.Name);
+				var validBookFields = lowerCaseBookFields
+					.Where(entry => bookProperties.ContainsKey(entry.Key))
+					.ToDictionary(entry => bookProperties[entry.Key], entry => entry.Value);
+				var findedBookObjs = await _DB.GetMongoDBEntity(typeof(Item.Book)).FindObjects(validBookFields);
+
+				if (findedBookObjs != null && findedBookObjs.Count > 0)
+				{
+					var settings = new JsonSerializerSettings
+					{
+						MissingMemberHandling = MissingMemberHandling.Ignore,
+						SerializationBinder = new MySerializationBinderBook()
+					};
+					var findedBooks = findedBookObjs
+						.Select(obj => JsonConvert.DeserializeObject<Item.Book>(JsonConvert.SerializeObject(obj), settings))
+						.ToList();
+					var filteredBooks = findedBooks.Where(book => !skipIds.Contains(book!.Id)); // Bỏ qua các cuốn sách có Id nằm trong skips
+					var resultBooks = filteredBooks.Take(amountCovers).ToList(); // ít hơn thì lấy tất 
+					return resultBooks.Select(book => book?.ToCoverBookCvt()).ToList()!; // không còn sách thì trả về lỗi hết sách 
+				}
+				throw new Exception("Không có sách nào");
+			}
+			catch (Exception ex) { throw new Exception(ex.Message); }
+		}
+
+		/// <summary>
+		/// Tương ựt như trên nhưng thay vì tìm kiếm chính xác thì tìm kiếm chứa trong 
+		/// </summary>
+		/// <param name="amountCovers"></param>
+		/// <param name="skipIds"></param>
+		/// <param name="bookFields"></param>
+		/// <returns></returns>
+		/// <exception cref="Exception"></exception>
+		public async Task<List<ItemCvt.CoverBookCvt>> GetCoversByFieldsContrains(int amountCovers, List<string> skipIds, Dictionary<string, List<string>> bookFields)
+		{
+			try
+			{
+				// bookFields của Api trả về có thể sẽ liên quan tới vấn đề viết hoa viết thường
+				// Chuyển tất cả các key trong bookFields về lowercase và đem đối chiếu với Properties của Book ở dạng lower case 
+				var lowerCaseBookFields = bookFields.ToDictionary(entry => entry.Key.ToLower(), entry => entry.Value);
+				var bookProperties = typeof(Item.Book).GetProperties().ToDictionary(prop => prop.Name.ToLower(), prop => prop.Name);
+				var validBookFields = lowerCaseBookFields
+					.Where(entry => bookProperties.ContainsKey(entry.Key))
+					.ToDictionary(entry => bookProperties[entry.Key], entry => entry.Value);
+				var findedBookObjs = await _DB.GetMongoDBEntity(typeof(Item.Book)).FindObjects(validBookFields);
+
+				if (findedBookObjs != null && findedBookObjs.Count > 0)
+				{
+					var settings = new JsonSerializerSettings
+					{
+						MissingMemberHandling = MissingMemberHandling.Ignore,
+						SerializationBinder = new MySerializationBinderBook()
+					};
+					var findedBooks = findedBookObjs
+						.Select(obj => JsonConvert.DeserializeObject<Item.Book>(JsonConvert.SerializeObject(obj), settings))
+						.ToList();
+
+					var filteredBooks = findedBooks.Where(book => !skipIds.Contains(book!.Id)); // Bỏ qua các cuốn sách có Id nằm trong skips
+					var resultBooks = filteredBooks.Take(amountCovers).ToList(); // ít hơn thì lấy tất 
+					return resultBooks.Select(book => book?.ToCoverBookCvt()).ToList()!; // không còn sách thì trả về lỗi hết sách 
+				}
+				throw new Exception("Không có sách nào");
+			}
+			catch (Exception ex) { throw new Exception(ex.Message); }
+		}
 		#endregion Phần bìa sách 
 
 		#region Phần intro sách
@@ -119,45 +199,6 @@ namespace ApiTruyenLau.Services
 					)
 				);
 				throw new Exception("Chưa làm xong");
-			}
-			catch (Exception ex) { throw new Exception(ex.Message); }
-		}
-
-		/// <summary>
-		/// Mỗi một thông điệp gửi 1 yêu cầu (ví dụ: genre thì chỉ lấy 1 kiểu cố định, không lấy theo nhiều loại cùng lúc) 
-		/// </summary>
-		/// <param name="amountIntros"></param>
-		/// <param name="bookFields"></param>
-		/// <returns></returns>
-		/// <exception cref="Exception"></exception>
-		public async Task<List<ItemCvt.IntroBookPartCvt>> GetIntrosBySomething(int amountIntros, List<string> skipIds, Dictionary<string, string> bookFields)
-		{
-			try
-			{
-				// bookFields của Api trả về có thể sẽ liên quan tới vấn đề viết hoa viết thường
-				// Chuyển tất cả các key trong bookFields về lowercase và đem đối chiếu với Properties của Book ở dạng lower case 
-				var lowerCaseBookFields = bookFields.ToDictionary(entry => entry.Key.ToLower(), entry => entry.Value);
-				var bookProperties = typeof(Item.Book).GetProperties().ToDictionary(prop => prop.Name.ToLower(), prop => prop.Name);
-				var validBookFields = lowerCaseBookFields
-					.Where(entry => bookProperties.ContainsKey(entry.Key))
-					.ToDictionary(entry => bookProperties[entry.Key], entry => entry.Value);
-				var findedBookObjs = await _DB.GetMongoDBEntity(typeof(Item.Book)).FindObjects(validBookFields);
-
-				if (findedBookObjs != null && findedBookObjs.Count > 0)
-				{
-					var settings = new JsonSerializerSettings
-					{
-						MissingMemberHandling = MissingMemberHandling.Ignore,
-						SerializationBinder = new MySerializationBinderBook()
-					};
-					var findedBooks = findedBookObjs
-						.Select(obj => JsonConvert.DeserializeObject<Item.Book>(JsonConvert.SerializeObject(obj), settings))
-						.ToList();
-					var filteredBooks = findedBooks.Where(book => !skipIds.Contains(book!.Id)); // Bỏ qua các cuốn sách có Id nằm trong skips
-					var resultBooks = filteredBooks.Take(amountIntros).ToList(); // ít hơn thì lấy tất 
-					return resultBooks.Select(book => book?.ToIntroBookPartCvt()).ToList()!; // không còn sách thì trả về lỗi hết sách 
-				}
-				throw new Exception("Không có sách nào");
 			}
 			catch (Exception ex) { throw new Exception(ex.Message); }
 		}

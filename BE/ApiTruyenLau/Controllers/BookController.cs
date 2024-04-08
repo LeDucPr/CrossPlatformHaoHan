@@ -28,6 +28,11 @@ namespace ApiTruyenLau.Controllers
 		}
 
 		#region Phần bìa sách 
+		/// <summary>
+		/// Lấy phần bìa sách theo id sách
+		/// </summary>
+		/// <param name="bookId"></param>
+		/// <returns></returns>
 		[HttpGet("GetCoverById")]
 		public async Task<ActionResult<ItemCvt.CoverBookCvt>> GetCoverById(string bookId)
 		{
@@ -38,9 +43,49 @@ namespace ApiTruyenLau.Controllers
 			}
 			catch (Exception ex) { return BadRequest(ex.Message); }
 		}
+
+		/// <summary>
+		/// Lấy vài quyển sách theo fields -> intro (filter by System)
+		/// </summary>
+		/// <param name="pbc"></param>
+		/// <returns></returns>
+		[HttpPut("GetCoversByFields(Equals)")]
+		public async Task<ActionResult<List<ItemCvt.CoverBookCvt>>> GetCoversByFieldsEquals([FromBody] ParamForBookCover pbc)
+		{
+			try
+			{
+				var introBookPartCvts = await _bookServices.GetCoversByFieldsEquals(pbc.AmountCovers, pbc.SkipIds, pbc.Fields);
+				return Ok(introBookPartCvts);
+			}
+			catch (Exception ex) { return BadRequest(ex.Message); }
+		}
+
+		/// <summary>
+		/// Lấy vài quyển sách theo fields -> intro (filter by System)
+		/// </summary>
+		/// <param name="pbc"></param>
+		/// <param name="LetterTrueWordFalse">mặc định true là lấy the letter</param>
+		/// <param name="amountWords">thông số này không qua tâm khi chỉ lấy ra theo letter (true)</param>
+		/// <returns></returns>
+		[HttpPut("GetCoversByFields(Contrains)")]
+		public async Task<ActionResult<List<ItemCvt.CoverBookCvt>>> GetCoverByFieldsContrains([FromBody] ParamForBookCover pbc, bool LetterTrueWordFalse = true, int amountWords = 1)
+		{
+			try
+			{
+				var dictFields = LetterTrueWordFalse ? pbc.FieldsToLetter() : pbc.FieldsToWords(amountWords);
+				var introBookPartCvts = await _bookServices.GetCoversByFieldsContrains(pbc.AmountCovers, pbc.SkipIds, dictFields);
+				return Ok(introBookPartCvts);
+			}
+			catch (Exception ex) { return BadRequest(ex.Message); }
+		}
 		#endregion Phần bìa sách
 
 		#region Phần intro sách
+		/// <summary>
+		/// Lấy phần intro sách theo id sách
+		/// </summary>
+		/// <param name="bookId"></param>
+		/// <returns></returns>
 		[HttpGet("GetIntroById")]
 		public async Task<ActionResult<ItemCvt.IntroBookPartCvt>> GetIntroById(string bookId)
 		{
@@ -52,6 +97,11 @@ namespace ApiTruyenLau.Controllers
 			catch (Exception ex) { return BadRequest(ex.Message); }
 		}
 
+		/// <summary>
+		/// Lấy intros theo id người dùng (tự lấy theo nhu cầu người dùng)
+		/// </summary>
+		/// <param name="userId"></param>
+		/// <returns></returns>
 		[HttpGet("GetIntros")]
 		public async Task<ActionResult<ItemCvt.IntroBookPartCvt>> GetIntros(string userId)
 		{
@@ -62,20 +112,14 @@ namespace ApiTruyenLau.Controllers
 			}
 			catch (Exception ex) { return BadRequest(ex.Message); }
 		}
-
-		[HttpPut("GetSomeByFields")] // lấy vài quyển theo fields -> intro (filter by System)
-		public async Task<ActionResult<List<ItemCvt.IntroBookPartCvt>>> GetIntroByFields([FromBody] ParamForBookIntro pbi)
-		{
-			try
-			{
-				var introBookPartCvts = await _bookServices.GetIntrosBySomething(pbi.AmountIntros, pbi.SkipIds, pbi.Fields);
-				return Ok(introBookPartCvts);
-			}
-			catch (Exception ex) { return BadRequest(ex.Message); }
-		}
 		#endregion Phần intro sách
 
 		#region Phần nội dung sách
+		/// <summary>
+		/// Lấy nội dung sách theo id sách
+		/// </summary>
+		/// <param name="bookId"></param>
+		/// <returns></returns>
 		[HttpGet("GetBookById")]
 		public async Task<ActionResult<ItemCvt.BookCvt>> GetBookById(string bookId)
 		{
@@ -87,6 +131,13 @@ namespace ApiTruyenLau.Controllers
 			catch (Exception ex) { return BadRequest(ex.Message); }
 		}
 
+		/// <summary>
+		/// Lấy nội dung sách theo id sách và số lượng trang kế tiếp
+		/// </summary>
+		/// <param name="bookId"></param>
+		/// <param name="skipImages"></param>
+		/// <param name="takeImages"></param>
+		/// <returns></returns>
 		[HttpGet("GetNextImagesForContent")]
 		public async Task<ActionResult<List<string>>> GetNextImagesForContent(string bookId, int skipImages, int takeImages)
 		{
@@ -100,6 +151,11 @@ namespace ApiTruyenLau.Controllers
 		#endregion Phần nội dung sách
 
 		#region Phần tạo sách
+		/// <summary>
+		/// Tạo sách mới theo đúng cấu trúc bằng json (tạo với array)
+		/// </summary>
+		/// <param name="bookCreaterCvts"></param>
+		/// <returns></returns>
 		[HttpPost("CreateNewBooks")]
 		public async Task<ActionResult<string>> CreateBooks([FromBody] List<ItemCvt.BookCreaterCvt> bookCreaterCvts)
 		{
@@ -114,12 +170,33 @@ namespace ApiTruyenLau.Controllers
 
 
 		#region Class nhận Api
-		public class ParamForBookIntro
+		public class ParamForBookCover
 		{
-			public int AmountIntros { get; set; }
+			public int AmountCovers { get; set; }
 			public List<string> SkipIds { get; set; } = new List<string>();
 			[Required]
 			public Dictionary<string, string> Fields { get; set; } = null!;
+			private List<string> Letter(ParamForBookCover pbc)
+			{
+				return pbc.Fields.SelectMany(field => field.Value.Where(char.IsLetterOrDigit).Select(c => c.ToString())).ToList();
+			}
+
+			private List<string> Words(ParamForBookCover pbc, int amountLetter)
+			{
+				return pbc.Fields.SelectMany(field => Enumerable.Range(0, field.Value.Length - amountLetter + 1)
+					.Where(i => field.Value.Skip(i).Take(amountLetter).All(char.IsLetterOrDigit))
+					.Select(i => field.Value.Substring(i, amountLetter)))
+					.ToList();
+			}
+
+			public Dictionary<string, List<string>> FieldsToLetter()
+			{
+				return Fields.ToDictionary(f => f.Key, f => Letter(this));
+			}
+			public Dictionary<string, List<string>> FieldsToWords(int amountLetter)
+			{
+				return Fields.ToDictionary(f => f.Key, f => Words(this, amountLetter));
+			}
 		}
 		#endregion Class nhận Api
 	}
