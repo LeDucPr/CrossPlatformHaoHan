@@ -51,6 +51,35 @@ namespace DataConnecion.MongoDB
 			return objects;
 		}
 
+		/// <summary>
+		/// Tạo bộ lọc cho các Fields 
+		/// </summary>
+		/// <param name="findComponents"></param>
+		/// <param name="isAllKeysNeedContains">Chỉ cần 1 Field chứa 1 thành phần trong list<string></param>
+		/// <returns></returns>
+		public async Task<List<T>> FindObjects(Dictionary<string, List<string>> findComponents, bool isAllKeysNeedContains = false)
+		{
+			if (findComponents == null || findComponents.Count == 0)
+				return new List<T>();
+
+			var filters = new List<FilterDefinition<BsonDocument>>();
+			foreach (var component in findComponents)
+			{
+				var subFilters = component.Value.Select(value => Builders<BsonDocument>.Filter.Regex(component.Key, new BsonRegularExpression(value)));
+				filters.Add(Builders<BsonDocument>.Filter.Or(subFilters));
+			}
+			FilterDefinition<BsonDocument> filter;
+			if (isAllKeysNeedContains)
+				filter = Builders<BsonDocument>.Filter.And(filters);
+			else
+				filter = Builders<BsonDocument>.Filter.Or(filters);
+			var documents = await _collection.Find(filter).ToListAsync();
+			var objects = documents.Select(doc => BsonSerializer.Deserialize<T>(doc)).ToList();
+			return objects;
+		}
+
+
+
 		public async Task<List<T>> FindObjects(KeyValuePair<string, List<string>> findContainComponents)
 		{
 			// Tạo một danh sách các bộ lọc, mỗi bộ lọc tương ứng với một giá trị trong findContainComponents.Value
