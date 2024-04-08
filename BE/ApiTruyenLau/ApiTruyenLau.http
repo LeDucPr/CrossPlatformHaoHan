@@ -1,6 +1,0 @@
-@ApiTruyenLau_HostAddress = http://localhost:5142
-
-GET {{ApiTruyenLau_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###
