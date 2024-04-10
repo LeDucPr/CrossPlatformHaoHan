@@ -1,10 +1,16 @@
 import { Text, SafeAreaView, StyleSheet, Image, Dimensions, View, ScrollView, TouchableOpacity, Button, ImageBackground } from 'react-native';
 import BackButton from '../components/BackButton';
+import { useEffect, useState } from 'react';
+import UpdateRating from '../fetchData/UpdateRating';
 const { width: Screen_width, height: Screen_height } = Dimensions.get('window');
 
 
 export default function BookScreen({ route, navigation }) {
   const { item } = route.params;
+  const handlePress = async (id) => {
+    console.log(1)
+    await UpdateRating(id);
+  };
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <View style={styles.container}>
@@ -29,11 +35,12 @@ export default function BookScreen({ route, navigation }) {
         </View>
         <View style={{ justifyContent: 'flex-end' }}>
           <View style={styles.Botcontainer}>
-            <TouchableOpacity style={{justifyContent:'center'}}>
+            <TouchableOpacity style={{ justifyContent: 'center', alignItems: 'center' }}   onPress={() => handlePress(item.id)}>
               <Image style={styles.likeButton} source={require("../assets/like-106.png")} resizeMode='contain' />
+              <Text>{item.rating}</Text>
             </TouchableOpacity>
             <View style={{ justifyContent: 'center', }}>
-              <TouchableOpacity style={styles.ReadBtn} onPress={() => navigation.navigate("ReadScreen",{item})}>
+              <TouchableOpacity style={styles.ReadBtn} onPress={() => navigation.navigate("ReadScreen", { item })}>
                 <Text>Read now</Text>
               </TouchableOpacity>
             </View>
@@ -117,6 +124,6 @@ const styles = StyleSheet.create({
   },
   likeButton: {
     width: Screen_width * 0.2,
-    height: "80%",
+    height: "65%",
   }
 });

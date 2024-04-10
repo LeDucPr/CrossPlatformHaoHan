@@ -10,7 +10,7 @@ import { useEffect, useState } from 'react';
 import Books from '../data';
 import SearchFilter from '../components/SearchScreen/SearchFilter';
 import BackButton from '../components/BackButton';
-import fetchDataFromFields from '../fetchData/FetchFromFields';
+import fetchCoversDataFromFieldsContrains from '../fetchData/FetchFromFields';
 
 const { width: Screen_width, height: Screen_height } = Dimensions.get('window');
 
@@ -18,9 +18,10 @@ export default function SearchScreen({ route, navigation }) {
   const { Datas } = route.params;
   const [isLoading, setIsLoading] = useState(false);
   const [tempSearchQuery, setTempSearchQuery] = useState('');
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState('');
   const [isEnterPressed, setIsEnterPressed] = useState(false);
-  const {Books, setBooks} = useState([]);
+  const [Books, setBooks] = useState([]);
+
 
   const handleSearch = (query) => {
     setTempSearchQuery(query);
@@ -30,25 +31,35 @@ export default function SearchScreen({ route, navigation }) {
     if (event.key === 'Enter') {
       setSearchQuery(tempSearchQuery);
       setIsEnterPressed(true);
-      // FindBooks();
     }
   };
 
+  useEffect(() => {
+    if (isEnterPressed) {
+      setIsLoading(true)
+      const fetchData = async () => {
+        try {
+          const sanitizedQuery = searchQuery.replace(/[+=\-()&*%#@!]/g, '');
+          const words = sanitizedQuery.split(' ');
+          const minWordLength = Math.min(...words.map(word => word.length));
+          const amountWord = minWordLength -2 
+          const amountCovers = 10;
+          const skipIds = [];
+          const fields = {
+            title: searchQuery.toLocaleLowerCase()
+          };
+          const data = await fetchCoversDataFromFieldsContrains(amountWord, amountCovers, skipIds, fields);
+          console.log(data);
+          setBooks(data)
+          setIsLoading(false)
+        } catch (error) {
+          console.error('Error fetching intro data:', error);
+        }
+      };
+      fetchData();
+    }
+  }, [searchQuery]);
 
-  // const FindBooks = async () => {
-  //   try {
-  //     const amountIntros = 10;
-  //     const skipIds = [""];
-  //     const fields = {
-  //       title: searchQuery
-  //     };
-  //     const data = await fetchDataFromFields(amountIntros, skipIds, fields);
-  //     setBooks(data);
-  //     console.log(Books);
-  //   } catch (error) {
-  //     console.error('Error fetching intro data:', error);
-  //   }
-  // };
 
   return (
     <SafeAreaView style={{ flex: 1, marginHorizontal: 20 }}>
@@ -60,7 +71,7 @@ export default function SearchScreen({ route, navigation }) {
           <Image style={styles.closeButton} source={require("../assets/closeIcon.png")} />
         </TouchableOpacity>
       </View>
-      {isEnterPressed && <SearchFilter navigation={navigation} data={Datas} input={searchQuery} setInput={setSearchQuery} />}
+      {isEnterPressed && <SearchFilter navigation={navigation} data={Books} input={searchQuery} setInput={setSearchQuery} loadingState={isLoading} />}
     </SafeAreaView>
   );
 }

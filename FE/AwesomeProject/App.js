@@ -10,9 +10,9 @@ import MainScreen from './Screens/MainScreen';
 import SearchScreen from './Screens/SearchScreen';
 import BookScreen from './Screens/BookScreen';
 import ReadScreen from './Screens/ReadScreen';
-import fetchIntroData from './fetchData/test';
+import fetchIntroData from './fetchData/FetchCoverById';
 import Datas from './data';
-import fetchDataFromFields from './fetchData/FetchFromFields';
+import fetchCoversDataFromFieldsContrains from './fetchData/FetchFromFields';
 import getImagesForBook from './fetchData/FetchImagesById';
 
 const Stack = createNativeStackNavigator()
@@ -38,13 +38,13 @@ export default function App() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const amountIntros = 3;
-        const skipIds = [""];
+        const amountCovers = 4;
+        const skipIds = [];
         const fields = {
-          author: "Kawahara Reki"
+          title: "Sword"
         };
         const amountPages = 0
-        const data = await fetchDataFromFields(amountIntros, skipIds, fields, amountPages);
+        const data = await fetchCoversDataFromFieldsContrains(5, amountCovers, skipIds, fields);
         console.log(data);
       } catch (error) {
         console.error('Error fetching intro data:', error);

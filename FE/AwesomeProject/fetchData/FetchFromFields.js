@@ -1,7 +1,7 @@
 import { urlHeader } from "../SetUp";
 
-export default async function fetchDataFromFields(amountIntros, skipIds, fields, amountPages) {
-    const url = `${urlHeader}/Book/GetSomeByFields`;
+export default async function fetchCoversDataFromFieldsContrains(amountWord, amountCovers, skipIds, fields) {
+    const url = `${urlHeader}/Book/GetCoversByFields(Contrains)?LetterTrueWordFalse=false&amountWords=${amountWord}`;
     const options = {
       method: 'PUT',
       headers: {
@@ -9,10 +9,9 @@ export default async function fetchDataFromFields(amountIntros, skipIds, fields,
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        amountIntros: amountIntros,
+        amountCovers: amountCovers,
         skipIds: skipIds,
         fields: fields,
-        amountPages: amountPages
       })
     };
   

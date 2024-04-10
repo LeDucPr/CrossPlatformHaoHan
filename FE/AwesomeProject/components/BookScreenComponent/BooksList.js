@@ -3,15 +3,15 @@ import { Image, StyleSheet, Text, View, FlatList, TouchableOpacity, Dimensions, 
 import { useRef, useState, useEffect, } from 'react';
 const { width: Screen_width, height: Screen_height } = Dimensions.get('window');
 
-export default function BooksList({ navigation, Datas, Name, LoadingState }) {
-    const [isLoading, setIsLoading] = useState(LoadingState);
+export default function BooksList({ navigation, datas, name, loadingState }) {
+    const [isLoading, setIsLoading] = useState(loadingState);
     useEffect(() => {
-        setIsLoading(LoadingState);
-      }, [LoadingState]);
+        setIsLoading(loadingState);
+      }, [loadingState]);
     return (
         <View style={{ marginBottom: Screen_height * 0.02 }}>
             <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', margin: Screen_width * 0.025, }}>
-                <Text style={styles.text}>{Name}</Text>
+                <Text style={styles.text}>{name}</Text>
                 <TouchableOpacity>
                     <Text>More {'>'}</Text>
                 </TouchableOpacity>
@@ -19,7 +19,7 @@ export default function BooksList({ navigation, Datas, Name, LoadingState }) {
             {isLoading ? (
                 <ActivityIndicator size="small" color="gray" />
             ) : (
-                <FlatList data={Datas} numColumns={2} renderItem={({ item }) => {
+                <FlatList data={datas} numColumns={2} renderItem={({ item }) => {
                     return (
                         <TouchableOpacity onPress={() => {
                             navigation.navigate('BookScreen', { item })

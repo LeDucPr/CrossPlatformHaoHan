@@ -12,7 +12,7 @@ import Datas from '../data';
 import MainScreenTop from '../components/MainScreenComponents/MaiScreenTop';
 import BooksList from '../components/BookScreenComponent/BooksList';
 import BottomBar from '../components/BottomBar';
-import fetchIntroData from '../fetchData/test';
+import fetchIntroData from '../fetchData/FetchCoverById';
 
 const { width: Screen_width, height: Screen_height } = Dimensions.get('window');
 
@@ -35,9 +35,9 @@ export default function MainScreen({ navigation }) {
     <SafeAreaView style={styles.container}>
       <MainScreenTop navigation={navigation} Datas={introDatas} />
       <ScrollView>
-        <Slider navigation={navigation} Datas={introDatas} LoadingState={isLoading} />
-        <BooksList navigation={navigation} Datas={introDatas} Name={'Daily Picks'} LoadingState={isLoading} />
-        <BooksList navigation={navigation} Datas={introDatas} Name={'What You Might Like'} LoadingState={isLoading} />
+        <Slider navigation={navigation} datas={introDatas} loadingState={isLoading} />
+        <BooksList navigation={navigation} datas={introDatas} name={'Daily Picks'} loadingState={isLoading} />
+        <BooksList navigation={navigation} datas={introDatas} name={'What You Might Like'} loadingState={isLoading} />
       </ScrollView>
       <BottomBar navigation={navigation} />
     </SafeAreaView>

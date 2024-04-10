@@ -17,8 +17,10 @@ namespace ApiTruyenLau.Services.Interfaces
 		public Task<List<ItemCvt.CoverBookCvt>> GetCoversByFieldsContrains(int amountCovers, List<string> skipIds, Dictionary<string, List<string>> bookFields);
 		#endregion Phần intro sách
 
-		#region Nội dung sách 
-		public Task<ItemCvt.BookCvt> GetBookById(string bookId);
+		public Task<string> UpdateBookRating(string bookId);
+
+        #region Nội dung sách 
+        public Task<ItemCvt.BookCvt> GetBookById(string bookId);
 		public Task<List<string>> GetNextImagesForContent(string bookId, int skipImages, int takeImages);
 		#endregion Nội dung sách 
 

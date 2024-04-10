@@ -13,11 +13,11 @@ import WebLogo from '../WebLogo';
 import Pagination from './Pagination';
 
 
-export default function Slider({ navigation, Datas, LoadingState }) {
-  const [isLoading, setIsLoading] = useState(LoadingState);
+export default function Slider({ navigation, datas, loadingState }) {
+  const [isLoading, setIsLoading] = useState(loadingState);
   useEffect(() => {
-    setIsLoading(LoadingState);
-  }, [LoadingState]);
+    setIsLoading(loadingState);
+  }, [loadingState]);
   const [index, setIndex] = useState(0);
   const scrollX = useRef(new Animated.Value(0)).current;
 
@@ -84,7 +84,7 @@ export default function Slider({ navigation, Datas, LoadingState }) {
       ) : (
         <View>
           <FlatList
-            data={Datas}
+            data={datas}
             ref={flatlistRef}
             getItemLayout={getItemLayout}
             renderItem={({ item }) => <SliderItem item={item} navigation={navigation} />}

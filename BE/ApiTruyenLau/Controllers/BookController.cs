@@ -131,14 +131,28 @@ namespace ApiTruyenLau.Controllers
 			catch (Exception ex) { return BadRequest(ex.Message); }
 		}
 
-		/// <summary>
-		/// Lấy nội dung sách theo id sách và số lượng trang kế tiếp
-		/// </summary>
-		/// <param name="bookId"></param>
-		/// <param name="skipImages"></param>
-		/// <param name="takeImages"></param>
-		/// <returns></returns>
-		[HttpGet("GetNextImagesForContent")]
+        [HttpPost("UpdateBookRating")]
+        public async Task<ActionResult> UpdateRatingBook(string bookId)
+        {
+            try
+            {
+				var a = await _bookServices.UpdateBookRating(bookId);
+                return Ok(a);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message); 
+            }
+        }
+
+        /// <summary>
+        /// Lấy nội dung sách theo id sách và số lượng trang kế tiếp
+        /// </summary>
+        /// <param name="bookId"></param>
+        /// <param name="skipImages"></param>
+        /// <param name="takeImages"></param>
+        /// <returns></returns>
+        [HttpGet("GetNextImagesForContent")]
 		public async Task<ActionResult<List<string>>> GetNextImagesForContent(string bookId, int skipImages, int takeImages)
 		{
 			try
