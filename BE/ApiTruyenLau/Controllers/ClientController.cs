@@ -12,19 +12,31 @@ namespace ApiTruyenLau.Controllers
 		private readonly ILogger<ClientController> _logger;
 		private readonly IConfiguration _configuration;
 		private IAccountServices _accountServices;
-		public ClientController(IAccountServices accountServices, ILogger<ClientController> logger, IConfiguration configuration)
+		private IClientServices _clientServices;
+		public ClientController(IAccountServices accountServices, ILogger<ClientController> logger, IConfiguration configuration, IClientServices clientServices)
 		{
 			_logger = logger;
 			_configuration = configuration;
 			_accountServices = accountServices;
+			_clientServices = clientServices;
 		}
 
-		//[HttpGet(Name = "GetClientById")]
-		//public async Task<ActionResult<IEnumerable<User.Client>>> GetClientsAsync(string clientId)
-		//{
-		//	return null;
-		//}
-		[HttpGet(Name = "GetClient")]
+
+		[HttpGet("GetBookIdsByClientId/{clientId}")]
+		public async Task<ActionResult<List<string>>> GetBookIdsByClientId(string clientId)
+		{
+			var clientReadedCvt = await _clientServices.GetReadedById(clientId);
+			return Ok(clientReadedCvt.ReadedId);
+		}
+
+		[HttpPost("UpdateBookIdsByClientId/{clientId}/{bookId}")]
+		public async Task<ActionResult> UpdateBookIdsByClientId(string clientId, string bookId)
+		{
+			try { await _clientServices.UpdateClientReadedId(clientId, bookId); return Ok("Cập nhật sách đã đọc thành công."); }
+			catch (Exception ex) { return Ok(ex.Message); }
+		}
+
+		[HttpGet("SignIn/{userName}/{password}")]
 		public async Task<ActionResult<IEnumerable<UserCvt.ClientInfoCvt>>> SignIn(string userName, string password)
 		{
 			UserCvt.ClientInfoCvt clientInfoCvt = new UserCvt.ClientInfoCvt()
@@ -38,7 +50,7 @@ namespace ApiTruyenLau.Controllers
 		}
 
 		// tạo người dùng mới
-		[HttpPost(Name = "CreateClient")]
+		[HttpPost("SignUp/CreateClient")]
 		public async Task<ActionResult> SignUp([FromBody] UserCvt.ClientInfoCvt clientInfoCvt)
 		{
 			try { await _accountServices.SignUpClient(clientInfoCvt); return Ok("Tạo tài khoản mới thành công."); }

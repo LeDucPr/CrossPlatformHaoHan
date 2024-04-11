@@ -61,17 +61,30 @@ namespace DataConnecion.MongoDB
 			object convertedValue;
 
 			// Chuyển đổi updateValue sang kiểu dữ liệu phù hợp
-			switch (Type.GetTypeCode(updateValueType))
+			if (updateValueType.IsGenericType && updateValueType.GetGenericTypeDefinition() == typeof(List<>))
 			{
-				case TypeCode.Int32:
-					convertedValue = Convert.ToInt32(updateValue);
-					break;
-				case TypeCode.Double:
-					convertedValue = Convert.ToDouble(updateValue);
-					break;
-				// Thêm các trường hợp khác nếu cần
-				default:
-					throw new ArgumentException($"Unsupported update value type: {updateValueType}");
+				if (updateValueType.GetGenericArguments()[0] == typeof(string))
+					convertedValue = (updateValue as List<string>)!;
+				else if (updateValueType.GetGenericArguments()[0] == typeof(int))
+					convertedValue = (updateValue as List<int>)!;
+				else if (updateValueType.GetGenericArguments()[0] == typeof(double))
+					convertedValue = (updateValue as List<double>)!;
+				else
+					throw new ArgumentException($"Unsupported list type: {updateValueType.GetGenericArguments()[0]}");
+			}
+			else
+			{
+				switch (Type.GetTypeCode(updateValueType))
+				{
+					case TypeCode.Int32:
+						convertedValue = Convert.ToInt32(updateValue);
+						break;
+					case TypeCode.Double:
+						convertedValue = Convert.ToDouble(updateValue);
+						break;
+					default:
+						throw new ArgumentException($"Unsupported update value type: {updateValueType}");
+				}
 			}
 
 			var update = Builders<BsonDocument>.Update.Set(updateField, convertedValue);

@@ -1,5 +1,4 @@
-﻿using ApiTruyenLau.Objects.Converters.Users;
-using User = ApiTruyenLau.Objects.Generics.Users;
+﻿using User = ApiTruyenLau.Objects.Generics.Users;
 using UserCvt = ApiTruyenLau.Objects.Converters.Users;
 
 namespace ApiTruyenLau.Services.Interfaces
