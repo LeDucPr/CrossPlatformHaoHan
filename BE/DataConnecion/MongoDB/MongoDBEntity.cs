@@ -54,7 +54,6 @@ namespace DataConnecion.MongoDB
 			return objects;
 		}
 
-
         public async Task UpdateObject(Dictionary<string, string> findComponents, object updatedObject)
         {
             var filter = new BsonDocument(findComponents);
