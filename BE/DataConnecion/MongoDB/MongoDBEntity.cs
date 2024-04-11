@@ -43,8 +43,8 @@ namespace DataConnecion.MongoDB
 			return documents;
 		}
 
-       
-        public async Task<List<T>> FindObjects(Dictionary<string, string> findComponents)
+
+		public async Task<List<T>> FindObjects(Dictionary<string, string> findComponents)
 		{
 			// bằng null hoặc rỗng thì return không có gì 
 			if (findComponents == null || findComponents.Count == 0)
@@ -54,25 +54,40 @@ namespace DataConnecion.MongoDB
 			return objects;
 		}
 
-        public async Task UpdateObject(Dictionary<string, string> findComponents, object updatedObject)
-        {
-            var filter = new BsonDocument(findComponents);
+		public async Task UpdateObject(Dictionary<string, string> findComponents, string updateField, object updateValue, Type updateValueType)
+		{
+			List<BsonDocument> documents = await this.FindBsons(findComponents);
+			var filter = documents.ElementAt(0);
+			object convertedValue;
 
-            // Chuyển đổi đối tượng cập nhật thành BsonDocument
-            var updatedDocument = BsonDocument.Parse(JsonConvert.SerializeObject(updatedObject));
+			// Chuyển đổi updateValue sang kiểu dữ liệu phù hợp
+			switch (Type.GetTypeCode(updateValueType))
+			{
+				case TypeCode.Int32:
+					convertedValue = Convert.ToInt32(updateValue);
+					break;
+				case TypeCode.Double:
+					convertedValue = Convert.ToDouble(updateValue);
+					break;
+				// Thêm các trường hợp khác nếu cần
+				default:
+					throw new ArgumentException($"Unsupported update value type: {updateValueType}");
+			}
 
-            // Thực hiện câu truy vấn cập nhật bằng cách thay thế tài liệu cũ bằng tài liệu mới
-            await _collection.ReplaceOneAsync(filter, updatedDocument);
-        }
+			var update = Builders<BsonDocument>.Update.Set(updateField, convertedValue);
+			await _collection.UpdateOneAsync(filter, update);
+		}
 
 
-        /// <summary>
-        /// Tạo bộ lọc cho các Fields 
-        /// </summary>
-        /// <param name="findComponents"></param>
-        /// <param name="isAllKeysNeedContains">Chỉ cần 1 Field chứa 1 thành phần trong list<string></param>
-        /// <returns></returns>
-        public async Task<List<T>> FindObjects(Dictionary<string, List<string>> findComponents, bool isAllKeysNeedContains = false)
+
+
+		/// <summary>
+		/// Tạo bộ lọc cho các Fields 
+		/// </summary>
+		/// <param name="findComponents"></param>
+		/// <param name="isAllKeysNeedContains">Chỉ cần 1 Field chứa 1 thành phần trong list<string></param>
+		/// <returns></returns>
+		public async Task<List<T>> FindObjects(Dictionary<string, List<string>> findComponents, bool isAllKeysNeedContains = false)
 		{
 			if (findComponents == null || findComponents.Count == 0)
 				return new List<T>();
@@ -106,10 +121,10 @@ namespace DataConnecion.MongoDB
 			return objects;
 		}
 
-    
 
-        // xóa tất cả dữ liệu trong collection
-        public async void DeleteAll()
+
+		// xóa tất cả dữ liệu trong collection
+		public async void DeleteAll()
 		{
 			await _collection.DeleteManyAsync(new BsonDocument());
 		}
@@ -181,5 +196,19 @@ namespace DataConnecion.MongoDB
 			List<BsonDocument> sortedDocuments = await _collection.Find(new BsonDocument()).Sort(sort).ToListAsync();
 			return sortedDocuments;
 		}
+
+		public async Task<BsonDocument> GetLastBson(string fieldName)
+		{
+			var sortDefinition = Builders<BsonDocument>.Sort.Descending(fieldName);
+			var lastObject = await _collection.Find(new BsonDocument()).Sort(sortDefinition).Limit(1).FirstOrDefaultAsync();
+			return lastObject;
+		}
+		public async Task<T> GetLastObject(string fieldName)
+		{
+			var sortDefinition = Builders<BsonDocument>.Sort.Descending(fieldName);
+			var lastObject = await _collection.Find(new BsonDocument()).Sort(sortDefinition).Limit(1).FirstOrDefaultAsync();
+			return BsonSerializer.Deserialize<T>(lastObject);
+		}
+
 	}
 }
