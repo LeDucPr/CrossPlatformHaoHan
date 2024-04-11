@@ -24,7 +24,7 @@ import {
         navigation.navigate('BookScreen', {item})
     }}>
         <View style={styles.container}>
-            <Image source={item.img}  resizeMode="cover" 
+            <Image source={item.coverComicImagePngStrings[0]}  resizeMode="cover" 
              style={[
                     styles.image,
                     {

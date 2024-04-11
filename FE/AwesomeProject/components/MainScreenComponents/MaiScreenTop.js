@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 
 
 
-export default function MaiScreenTop({navigation}) {
+export default function MaiScreenTop({navigation, Datas}) {
   return (
     <View style = {styles.container}>
         <View style = {styles.TopSection}>
@@ -17,7 +17,7 @@ export default function MaiScreenTop({navigation}) {
             <TouchableOpacity style = {{ justifyContent:'center',}}>
               <Image source={require('../../assets/ToggleNightMode.png')} style={styles.icon} reszieMode = 'contain' />
             </TouchableOpacity>
-            <TouchableOpacity style = {{ justifyContent:'center'}} onPress={() => navigation.navigate("Search")}>
+            <TouchableOpacity style = {{ justifyContent:'center'}} onPress={() => navigation.navigate("Search", {Datas})}>
               <Image source={require('../../assets/SearchLogo.png')} style = {styles.icon} reszieMode = 'contain'/>
             </TouchableOpacity>
           </View>

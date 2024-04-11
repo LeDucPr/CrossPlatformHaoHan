@@ -2,6 +2,7 @@
 using MongoDB.Bson.Serialization;
 using MongoDB.Driver;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace DataConnecion.MongoDB
 {
@@ -41,7 +42,9 @@ namespace DataConnecion.MongoDB
 			List<BsonDocument> documents = await _collection.Find(filter).ToListAsync();
 			return documents;
 		}
-		public async Task<List<T>> FindObjects(Dictionary<string, string> findComponents)
+
+       
+        public async Task<List<T>> FindObjects(Dictionary<string, string> findComponents)
 		{
 			// bằng null hoặc rỗng thì return không có gì 
 			if (findComponents == null || findComponents.Count == 0)
@@ -51,13 +54,25 @@ namespace DataConnecion.MongoDB
 			return objects;
 		}
 
-		/// <summary>
-		/// Tạo bộ lọc cho các Fields 
-		/// </summary>
-		/// <param name="findComponents"></param>
-		/// <param name="isAllKeysNeedContains">Chỉ cần 1 Field chứa 1 thành phần trong list<string></param>
-		/// <returns></returns>
-		public async Task<List<T>> FindObjects(Dictionary<string, List<string>> findComponents, bool isAllKeysNeedContains = false)
+        public async Task UpdateObject(Dictionary<string, string> findComponents, object updatedObject)
+        {
+            var filter = new BsonDocument(findComponents);
+
+            // Chuyển đổi đối tượng cập nhật thành BsonDocument
+            var updatedDocument = BsonDocument.Parse(JsonConvert.SerializeObject(updatedObject));
+
+            // Thực hiện câu truy vấn cập nhật bằng cách thay thế tài liệu cũ bằng tài liệu mới
+            await _collection.ReplaceOneAsync(filter, updatedDocument);
+        }
+
+
+        /// <summary>
+        /// Tạo bộ lọc cho các Fields 
+        /// </summary>
+        /// <param name="findComponents"></param>
+        /// <param name="isAllKeysNeedContains">Chỉ cần 1 Field chứa 1 thành phần trong list<string></param>
+        /// <returns></returns>
+        public async Task<List<T>> FindObjects(Dictionary<string, List<string>> findComponents, bool isAllKeysNeedContains = false)
 		{
 			if (findComponents == null || findComponents.Count == 0)
 				return new List<T>();
@@ -91,8 +106,10 @@ namespace DataConnecion.MongoDB
 			return objects;
 		}
 
-		// xóa tất cả dữ liệu trong collection
-		public async void DeleteAll()
+    
+
+        // xóa tất cả dữ liệu trong collection
+        public async void DeleteAll()
 		{
 			await _collection.DeleteManyAsync(new BsonDocument());
 		}

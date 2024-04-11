@@ -183,7 +183,7 @@ namespace ApiTruyenLau.Objects.Extensions.Items
 			}
 			string[] imageFiles = Directory.GetFiles(directoryPath).Where(file => IsImage(file)).ToArray();
 			//if (imageFiles.Length > skipAmount + takeAmount) { }
-			imageFiles = imageFiles.Skip(skipAmount-1).Take(takeAmount).ToArray(); // bình thường được lấy từ 0, còn theo số lượng thì luôn đếm từ 1
+			imageFiles = imageFiles.Skip(skipAmount).Take(takeAmount).ToArray(); // bình thường được lấy từ 0, còn theo số lượng thì luôn đếm từ 1
 			return book.ConvertImagesToByteArrays(true, percentSize, quality, imageFiles);
 
 			//return new List<byte[]>(); // không còn ảnh nào
