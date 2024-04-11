@@ -16,7 +16,6 @@ export default function BookScreen({ route, navigation }) {
     const fetchImages = async () => {
         const takeImages = 3;
         const data = await getImagesForBook(item.id, skipImages, takeImages);
-        console.log(data);
         if (data) {
             setImages(prevImages => [...prevImages, ...data]);
             setIsLoadingFirstLoad(false);

@@ -34,25 +34,6 @@ const MyTheme = {
   },
 };
 export default function App() {
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const amountCovers = 4;
-        const skipIds = [];
-        const fields = {
-          title: "Sword"
-        };
-        const amountPages = 0
-        const data = await fetchCoversDataFromFieldsContrains(5, amountCovers, skipIds, fields);
-        console.log(data);
-      } catch (error) {
-        console.error('Error fetching intro data:', error);
-      }
-    };
-    fetchData();
-  }, []);
-
   return (
     <NavigationContainer theme={MyTheme}>
       <Stack.Navigator screenOptions={{

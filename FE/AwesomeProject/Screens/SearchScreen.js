@@ -27,6 +27,9 @@ export default function SearchScreen({ route, navigation }) {
     setTempSearchQuery(query);
   }
 
+  const handleSubmit =() => {
+    setSearchQuery(tempSearchQuery);
+  }
   const handleKeyPress = (event) => {
     if (event.key === 'Enter') {
       setSearchQuery(tempSearchQuery);
@@ -42,14 +45,13 @@ export default function SearchScreen({ route, navigation }) {
           const sanitizedQuery = searchQuery.replace(/[+=\-()&*%#@!]/g, '');
           const words = sanitizedQuery.split(' ');
           const minWordLength = Math.min(...words.map(word => word.length));
-          const amountWord = minWordLength -2 
+          const amountWord = minWordLength - 1
           const amountCovers = 10;
           const skipIds = [];
           const fields = {
             title: searchQuery.toLocaleLowerCase()
           };
           const data = await fetchCoversDataFromFieldsContrains(amountWord, amountCovers, skipIds, fields);
-          console.log(data);
           setBooks(data)
           setIsLoading(false)
         } catch (error) {
@@ -66,7 +68,7 @@ export default function SearchScreen({ route, navigation }) {
       <BackButton navigation={navigation} />
       <View style={styles.parent}>
         <TextInput placeholder='Search' style={styles.searchBox} autoCapitalize='none' autoCorrect={false} value={tempSearchQuery}
-          onChangeText={(query) => handleSearch(query)} onKeyPress={handleKeyPress} />
+          onChangeText={(query) => handleSearch(query)} onKeyPress={handleKeyPress} onSubmitEditing={handleSubmit} />
         <TouchableOpacity style={styles.closeButtonParent} onPress={() => { handleSearch(""); setIsEnterPressed(false); }}>
           <Image style={styles.closeButton} source={require("../assets/closeIcon.png")} />
         </TouchableOpacity>

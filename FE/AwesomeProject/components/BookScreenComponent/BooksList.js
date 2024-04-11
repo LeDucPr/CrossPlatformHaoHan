@@ -19,13 +19,13 @@ export default function BooksList({ navigation, datas, name, loadingState }) {
             {isLoading ? (
                 <ActivityIndicator size="small" color="gray" />
             ) : (
-                <FlatList data={datas} numColumns={2} renderItem={({ item }) => {
+                <FlatList nestedScrollEnabled data={datas} numColumns={2} renderItem={({ item }) => {
                     return (
                         <TouchableOpacity onPress={() => {
                             navigation.navigate('BookScreen', { item })
                         }}>
                             <View style={styles.container}>
-                                <Image style={styles.image} source={item.coverComicImagePngStrings[0]} resizeMode="cover" />
+                                <Image style={styles.image} source={{uri: item.coverComicImagePngStrings[0]}} resizeMode="cover" />
                                 <Text numberOfLines={1} style={styles.title}>{item.title}</Text>
                             </View>
                         </TouchableOpacity>

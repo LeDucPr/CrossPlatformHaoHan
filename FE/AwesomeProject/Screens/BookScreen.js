@@ -15,7 +15,7 @@ export default function BookScreen({ route, navigation }) {
     <SafeAreaView style={{ flex: 1 }}>
       <View style={styles.container}>
         <View style={styles.image}>
-          <ImageBackground source={item.coverComicImagePngStrings[0]} resizeMode="cover" style={{ flex: 1, width: "100%" }}>
+          <ImageBackground source={{uri: item.coverComicImagePngStrings[0]}} resizeMode="cover" style={{ flex: 1, width: "100%" }}>
             <View style={styles.backConainer}>
               <BackButton navigation={navigation} />
             </View>
@@ -76,7 +76,7 @@ const styles = StyleSheet.create({
   titletext: {
     width: '80%',
     color: '#FFFDFD',
-    fontSize: 30,
+    fontSize: 25,
     fontWeight: 'bold',
   },
   overlay: {
