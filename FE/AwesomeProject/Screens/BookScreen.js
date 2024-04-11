@@ -37,7 +37,7 @@ export default function BookScreen({ route, navigation }) {
           <View style={styles.Botcontainer}>
             <TouchableOpacity style={{ justifyContent: 'center', alignItems: 'center' }}   onPress={() => handlePress(item.id)}>
               <Image style={styles.likeButton} source={require("../assets/like-106.png")} resizeMode='contain' />
-              <Text>{item.rating}</Text>
+              <Text>{item.reader}</Text>
             </TouchableOpacity>
             <View style={{ justifyContent: 'center', }}>
               <TouchableOpacity style={styles.ReadBtn} onPress={() => navigation.navigate("ReadScreen", { item })}>

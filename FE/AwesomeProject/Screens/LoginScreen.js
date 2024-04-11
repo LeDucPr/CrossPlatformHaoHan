@@ -22,8 +22,9 @@ export default function LoginScreen({ navigation }) {
 
     const handleLogin = async () => {
         try {
-            const response = await fetch(`${urlHeader}/Client?userName=` + username + '&password=' + password);
+            const response = await fetch(`${urlHeader}/Client/SignIn/` + username + '/' + password);
             const data = await response.json();
+            console.log(data);
 
             if (response.ok) {
                 if (data.id) { // Kiểm tra nếu tồn tại ID trong dữ liệu trả về từ API

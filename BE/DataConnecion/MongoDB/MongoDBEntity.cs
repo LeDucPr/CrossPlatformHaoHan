@@ -108,7 +108,7 @@ namespace DataConnecion.MongoDB
 			var filters = new List<FilterDefinition<BsonDocument>>();
 			foreach (var component in findComponents)
 			{
-				var subFilters = component.Value.Select(value => Builders<BsonDocument>.Filter.Regex(component.Key, new BsonRegularExpression(value)));
+				var subFilters = component.Value.Select(value => Builders<BsonDocument>.Filter.Regex(component.Key, new BsonRegularExpression(value, "i")));
 				filters.Add(Builders<BsonDocument>.Filter.Or(subFilters));
 			}
 			FilterDefinition<BsonDocument> filter;

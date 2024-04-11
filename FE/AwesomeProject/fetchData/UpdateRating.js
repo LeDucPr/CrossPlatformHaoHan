@@ -1,7 +1,7 @@
 import { urlHeader } from "../SetUp";
 
 export default async function UpdateRating(id) {
-    const url = `${urlHeader}/Book/UpdateBookRating?bookId=${id}`;
+    const url = `${urlHeader}/Book/UpdateBookReader/bookId=${id}`;
     try {
         const response = await fetch(url, {
             method: 'POST',
