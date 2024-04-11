@@ -131,13 +131,13 @@ namespace ApiTruyenLau.Controllers
 			catch (Exception ex) { return BadRequest(ex.Message); }
 		}
 
-        [HttpPost("UpdateBookRating")]
+        [HttpPost("UpdateBookReader")]
         public async Task<ActionResult> UpdateRatingBook(string bookId)
         {
             try
             {
-				var a = await _bookServices.UpdateBookRating(bookId);
-                return Ok(a);
+				await _bookServices.UpdateBookReader(bookId);
+                return Ok("Dã thêm một lần đọc");
             }
             catch (Exception ex)
             {

@@ -1,16 +1,12 @@
-using ApiTruyenLau.Services.Interfaces;
+using ApiTruyenLau.Objects.Converters.Items;
 using ApiTruyenLau.Objects.Extensions.Items;
+using ApiTruyenLau.Services.Interfaces;
 using DataConnecion.MongoObjects;
 using Newtonsoft.Json;
-using Item = ApiTruyenLau.Objects.Generics.Items;
-using MGDBs = DataConnecion.MongoObjects.CommonObjects;
-using User = ApiTruyenLau.Objects.Generics.Users;
-using ItemCvt = ApiTruyenLau.Objects.Converters.Items;
 using Newtonsoft.Json.Serialization;
-using ApiTruyenLau.Objects.Converters.Items;
-using ZstdSharp;
-using Microsoft.AspNetCore.Mvc;
-using System.Drawing;
+using Item = ApiTruyenLau.Objects.Generics.Items;
+using ItemCvt = ApiTruyenLau.Objects.Converters.Items;
+using MGDBs = DataConnecion.MongoObjects.CommonObjects;
 
 
 namespace ApiTruyenLau.Services
@@ -26,7 +22,7 @@ namespace ApiTruyenLau.Services
 			this._DB = new MGDBs();
 			var mongoDBSettings = _configuration.GetSection("MongoDB").Get<MongoDBSettings>();
 			this._DB = this._DB.AddMongoDBSrv(mongoDBSettings?.ConnectionString!).AddMongoDBCollections(this.typeColection);
-			//this._DB.GetMongoDBEntity(typeof(User.Client)).Indexs();
+			this._DB.GetMongoDBEntity(typeof(Item.Book)).Indexs(nameof(Item.Book.Id));
 		}
 
 		// mục đích thiết kế phần bìa và intro riêng lẻ liên quan tới một số vấn đề lưu trữ tại máy người dùng (guest)
@@ -63,64 +59,14 @@ namespace ApiTruyenLau.Services
 			catch (Exception ex) { throw new Exception(ex.Message); }
 		}
 
-        public async Task<string> UpdateBookRating(string bookId)
-        {
-            try
-            {
-                var findedBookObjs = await _DB.GetMongoDBEntity(typeof(Item.Book)).FindObjects(new Dictionary<string, string>()
-                {
-                    { nameof(Item.Book.Id), bookId}
-                });
-                if (findedBookObjs != null && findedBookObjs.Count > 0)
-                {
-                    var settings = new JsonSerializerSettings
-                    {
-                        MissingMemberHandling = MissingMemberHandling.Ignore,
-                        SerializationBinder = new MySerializationBinderBook()
-                    };
-                    Item.Book? findedBook = findedBookObjs
-                        .Select(obj => JsonConvert.DeserializeObject<Item.Book>(JsonConvert.SerializeObject(obj), settings))
-                        .ToList().ElementAt(0);
-
-					if (findedBook != null)
-					{
-                        if (findedBook.Rating == null)
-                        {
-                            // Rating là null, gán giá trị là 1
-                            findedBook.Rating = "1";
-                        }
-                        else if (int.TryParse(findedBook.Rating, out int currentRating))
-                        {
-                            // Rating là số, tăng giá trị lên 1
-                            currentRating++;
-                            findedBook.Rating = currentRating.ToString();
-                        }
-						// Lưu lại đối tượng findedBook đã được cập nhật vào MongoDB
-						await _DB.GetMongoDBEntity(typeof(Item.Book)).UpdateObject(new Dictionary<string, string>()
-					{
-						{ nameof(Item.Book.Id), bookId}
-					}, findedBook);
-                        return findedBook.Rating;
-                    }
-				
-
-                }
-                throw new Exception($"không có quyển nào Id là {bookId}");
-            }
-            catch (Exception ex) { throw new Exception(ex.Message); }
-        }
-
-
-
-
-        /// <summary>
-        /// Mỗi một thông điệp gửi 1 yêu cầu (ví dụ: genre thì chỉ lấy 1 kiểu cố định, không lấy theo nhiều loại cùng lúc) 
-        /// </summary>
-        /// <param name="amountIntros"></param>
-        /// <param name="bookFields"></param>
-        /// <returns></returns>
-        /// <exception cref="Exception"></exception>
-        public async Task<List<ItemCvt.CoverBookCvt>> GetCoversByFieldsEquals(int amountCovers, List<string> skipIds, Dictionary<string, string> bookFields)
+		/// <summary>
+		/// Mỗi một thông điệp gửi 1 yêu cầu (ví dụ: genre thì chỉ lấy 1 kiểu cố định, không lấy theo nhiều loại cùng lúc) 
+		/// </summary>
+		/// <param name="amountIntros"></param>
+		/// <param name="bookFields"></param>
+		/// <returns></returns>
+		/// <exception cref="Exception"></exception>
+		public async Task<List<ItemCvt.CoverBookCvt>> GetCoversByFieldsEquals(int amountCovers, List<string> skipIds, Dictionary<string, string> bookFields)
 		{
 			try
 			{
@@ -316,7 +262,7 @@ namespace ApiTruyenLau.Services
 					Item.Book? findedBook = findedBookObjs
 						.Select(obj => JsonConvert.DeserializeObject<Item.Book>(JsonConvert.SerializeObject(obj), settings))
 						.ToList().ElementAt(0);
-					return findedBook?.GetImageAtElementsStringBase64Png(skipImages, takeImages, percentSize:45, quality:80)!;
+					return findedBook?.GetImageAtElementsStringBase64Png(skipImages, takeImages, percentSize: 45, quality: 80)!;
 				}
 				throw new NotImplementedException("Hết ảnh rồi");
 			}
@@ -349,6 +295,49 @@ namespace ApiTruyenLau.Services
 			catch (Exception ex) { throw new Exception(ex.Message); }
 		}
 		#endregion Phần tạo sách
+
+		#region Phần người đọc
+		/// <summary>
+		/// Update số lượng lượt đọc cho truyện này (dù là người cũ hay người mới)
+		/// </summary>
+		/// <param name="bookId"></param>
+		/// <returns></returns>
+		/// <exception cref="Exception"></exception>
+		public async Task UpdateBookReader(string bookId)
+		{
+			try
+			{
+				var findedBookObjs = await _DB.GetMongoDBEntity(typeof(Item.Book)).FindObjects(new Dictionary<string, string>()
+				{
+					{ nameof(Item.Book.Id), bookId}
+				});
+				if (findedBookObjs != null && findedBookObjs.Count > 0)
+				{
+					var settings = new JsonSerializerSettings
+					{
+						MissingMemberHandling = MissingMemberHandling.Ignore,
+						SerializationBinder = new MySerializationBinderBook()
+					};
+					Item.Book? findedBook = findedBookObjs
+						.Select(obj => JsonConvert.DeserializeObject<Item.Book>(JsonConvert.SerializeObject(obj), settings))
+						.ToList().ElementAt(0);
+
+					if (findedBook != null)
+					{
+						// Lưu lại đối tượng findedBook đã được cập nhật vào MongoDB
+						await _DB.GetMongoDBEntity(typeof(Item.Book)).UpdateObject(new Dictionary<string, string>()
+							{ { nameof(Item.Book.Id), bookId}},
+							nameof(Item.Book.Reader),
+							(findedBook.Reader + 1),
+							typeof(Item.Book).GetProperty(nameof(Item.Book.Reader))!.PropertyType);
+					}
+				}
+				throw new Exception($"không có quyển nào Id là {bookId}");
+			}
+			catch (Exception ex) { throw new Exception(ex.Message); }
+		}
+		#endregion Phần người đọc
+
 	}
 
 	public class MySerializationBinderBook : ISerializationBinder
