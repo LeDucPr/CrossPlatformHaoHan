@@ -6,7 +6,8 @@ namespace ApiTruyenLau.Services.Interfaces
 {
 	public interface IAccountServices
 	{
-		public Task<bool> SignUpClient(UserCvt.ClientInfoCvt clientInfoCvt); 
+		public Task<bool> SignUpClient(UserCvt.ClientInfoCvt clientInfoCvt);
 		public Task<User.Client> SignInClient(UserCvt.ClientInfoCvt clientInfoCvt);
+		public Task<string> NextClientId(int defaultAmountNumber = 5);
 	}
 }

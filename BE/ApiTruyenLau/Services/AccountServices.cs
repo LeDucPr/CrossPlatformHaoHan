@@ -28,6 +28,7 @@ namespace ApiTruyenLau.Services
 		{
 			try
 			{
+				clientInfoCvt.Id = await this.NextClientId();
 				if (clientInfoCvt.IsValid()) { }
 				User.Client newClient = clientInfoCvt.ToClientAccount();
 				newClient.Account.CreateDate = DateTime.Now;
@@ -64,6 +65,33 @@ namespace ApiTruyenLau.Services
 				throw new Exception("Client not found");
 			}
 			catch (Exception ex) { throw new Exception(ex.Message); }
+		}
+
+		public async Task<string> NextClientId(int defaultAmountNumber = 5)
+		{
+			try
+			{
+				var lastClientObj = await this._DB.GetMongoDBEntity(typeof(User.Client)).GetLastObject(nameof(User.Client.Id));
+				if (lastClientObj != null)
+				{
+					var settings = new JsonSerializerSettings
+					{
+						MissingMemberHandling = MissingMemberHandling.Ignore,
+						SerializationBinder = new MySerializationBinderAccount()
+					};
+					User.Client lastClient = JsonConvert.DeserializeObject<User.Client>(JsonConvert.SerializeObject(lastClientObj), settings)!;
+					// Chuyển đổi Id thành số, tăng nó lên 1, sau đó chuyển lại thành chuỗi và thêm số 0 vào phía trước nếu cần
+					int lastClientId = int.Parse(lastClient.Id);
+					string nextClientId = (lastClientId + 1).ToString().PadLeft(defaultAmountNumber, '0');
+					return nextClientId;
+				}
+				return "1".PadLeft(defaultAmountNumber, '0');
+			}
+			catch
+			{
+				// Trả về "00001" nếu không có client nào nếu defaultAmountNumber = 5
+				return "1".PadLeft(defaultAmountNumber, '0');
+			}
 		}
 	}
 
