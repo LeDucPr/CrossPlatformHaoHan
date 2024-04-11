@@ -1,16 +1,12 @@
-using ApiTruyenLau.Services.Interfaces;
+using ApiTruyenLau.Objects.Converters.Items;
 using ApiTruyenLau.Objects.Extensions.Items;
+using ApiTruyenLau.Services.Interfaces;
 using DataConnecion.MongoObjects;
 using Newtonsoft.Json;
-using Item = ApiTruyenLau.Objects.Generics.Items;
-using MGDBs = DataConnecion.MongoObjects.CommonObjects;
-using User = ApiTruyenLau.Objects.Generics.Users;
-using ItemCvt = ApiTruyenLau.Objects.Converters.Items;
 using Newtonsoft.Json.Serialization;
-using ApiTruyenLau.Objects.Converters.Items;
-using ZstdSharp;
-using Microsoft.AspNetCore.Mvc;
-using System.Drawing;
+using Item = ApiTruyenLau.Objects.Generics.Items;
+using ItemCvt = ApiTruyenLau.Objects.Converters.Items;
+using MGDBs = DataConnecion.MongoObjects.CommonObjects;
 
 
 namespace ApiTruyenLau.Services
@@ -26,7 +22,7 @@ namespace ApiTruyenLau.Services
 			this._DB = new MGDBs();
 			var mongoDBSettings = _configuration.GetSection("MongoDB").Get<MongoDBSettings>();
 			this._DB = this._DB.AddMongoDBSrv(mongoDBSettings?.ConnectionString!).AddMongoDBCollections(this.typeColection);
-			//this._DB.GetMongoDBEntity(typeof(User.Client)).Indexs();
+			this._DB.GetMongoDBEntity(typeof(Item.Book)).Indexs(nameof(Item.Book.Id));
 		}
 
 		// mục đích thiết kế phần bìa và intro riêng lẻ liên quan tới một số vấn đề lưu trữ tại máy người dùng (guest)
@@ -330,8 +326,8 @@ namespace ApiTruyenLau.Services
 					{
 						// Lưu lại đối tượng findedBook đã được cập nhật vào MongoDB
 						await _DB.GetMongoDBEntity(typeof(Item.Book)).UpdateObject(new Dictionary<string, string>()
-							{ { nameof(Item.Book.Id), bookId}}, 
-							nameof(Item.Book.Reader), 
+							{ { nameof(Item.Book.Id), bookId}},
+							nameof(Item.Book.Reader),
 							(findedBook.Reader + 1),
 							typeof(Item.Book).GetProperty(nameof(Item.Book.Reader))!.PropertyType);
 					}
