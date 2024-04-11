@@ -16,7 +16,8 @@ import fetchIntroData from '../fetchData/FetchCoverById';
 
 const { width: Screen_width, height: Screen_height } = Dimensions.get('window');
 
-export default function MainScreen({ navigation }) {
+export default function MainScreen({ route, navigation }) {
+  //const {userData} = route.params;
   const [introDatas, setIntroData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   useEffect(() => {

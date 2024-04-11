@@ -20,7 +20,12 @@
       }
     },
     "https": {
-      "commandName": "Project",
+      "commandName": "Project",@@ -54,7 +54,6 @@ namespace DataConnecion.MongoDB
+			return objects;
+		}
+
+
+        public async Task UpdateObject(Dictionary<string, string> findComponents, object updatedObj
       "dotnetRunMessages": true,
       "launchBrowser": true,
       "launchUrl": "swagger",

@@ -42,16 +42,17 @@ export default function SearchScreen({ route, navigation }) {
       setIsLoading(true)
       const fetchData = async () => {
         try {
-          const sanitizedQuery = searchQuery.replace(/[+=\-()&*%#@!]/g, '');
+          const sanitizedQuery = searchQuery.replace(/[+=\-()&*%#@!:]/g, '');
           const words = sanitizedQuery.split(' ');
           const minWordLength = Math.min(...words.map(word => word.length));
-          const amountWord = minWordLength - 1
+          const amountWord = minWordLength - 2
           const amountCovers = 10;
           const skipIds = [];
           const fields = {
-            title: searchQuery.toLocaleLowerCase()
+            title: searchQuery
           };
           const data = await fetchCoversDataFromFieldsContrains(amountWord, amountCovers, skipIds, fields);
+          console.log(data)
           setBooks(data)
           setIsLoading(false)
         } catch (error) {
@@ -73,7 +74,7 @@ export default function SearchScreen({ route, navigation }) {
           <Image style={styles.closeButton} source={require("../assets/closeIcon.png")} />
         </TouchableOpacity>
       </View>
-      {isEnterPressed && <SearchFilter navigation={navigation} data={Books} input={searchQuery} setInput={setSearchQuery} loadingState={isLoading} />}
+      {isEnterPressed && <SearchFilter navigation={navigation} data={Books} input={searchQuery.replace(/[+=\-()&*%#@!:]/g, '')} setInput={setSearchQuery} loadingState={isLoading} />}
     </SafeAreaView>
   );
 }

@@ -8,6 +8,7 @@ import {
     ImageBackground,
     SafeAreaView
 } from 'react-native';
+import { urlHeader } from '../SetUp';
 
 import WebLogo from '../components/WebLogo';
 import ImageBackground1 from '../components/ImageBackground1';
@@ -21,14 +22,14 @@ export default function LoginScreen({ navigation }) {
 
     const handleLogin = async () => {
         try {
-            const response = await fetch('https://localhost:7188/Client?userName=' + username + '&password=' + password);
+            const response = await fetch(`${urlHeader}/Client?userName=` + username + '&password=' + password);
             const data = await response.json();
 
             if (response.ok) {
                 if (data.id) { // Kiểm tra nếu tồn tại ID trong dữ liệu trả về từ API
                     setUserData(data); // Lưu thông tin người dùng vào state
                     setIsLoggedIn(true);
-                    navigation.navigate('MainScreen');
+                    navigation.navigate('MainScreen', { userData });
                 } else {
                     alert('Tên người dùng hoặc mật khẩu không chính xác');
                 }
