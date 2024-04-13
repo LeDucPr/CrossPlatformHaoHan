@@ -10,13 +10,15 @@ import MainScreen from './Screens/MainScreen';
 import SearchScreen from './Screens/SearchScreen';
 import BookScreen from './Screens/BookScreen';
 import ReadScreen from './Screens/ReadScreen';
+import UserSceen from './Screens/UserScreen';
+import LibraryScreen from './Screens/LibraryScreen';
 import fetchIntroData from './fetchData/FetchCoverById';
 import Datas from './data';
 import fetchCoversDataFromFieldsContrains from './fetchData/FetchFromFields';
 import getImagesForBook from './fetchData/FetchImagesById';
 
 const Stack = createNativeStackNavigator()
-//const Stack = createBottomTabNavigator()
+
 const navTheme = {
   ...DefaultTheme,
   colors: {
@@ -38,14 +40,16 @@ export default function App() {
     <NavigationContainer theme={MyTheme}>
       <Stack.Navigator screenOptions={{
         headerShown: false,
-      }} initialRouteName='LoginScreen'>
+      }} initialRouteName='UserScreen'>
         <Stack.Screen name="MainScreen" component={MainScreen} />
         <Stack.Screen name="DashBoard" component={DashBoardScreen}  />   
         <Stack.Screen name="LoginScreen" component={LoginScreen}  />
-          <Stack.Screen name="Register" component={RegisterScreen} />
+        <Stack.Screen name="Register" component={RegisterScreen} />
         <Stack.Screen name="Search" component={SearchScreen} />
         <Stack.Screen name="BookScreen" component={BookScreen} />
         <Stack.Screen name="ReadScreen" component={ReadScreen} />
+        <Stack.Screen name="UserSceen" component={UserSceen}/>
+        <Stack.Screen name="LibraryScreen" component={LibraryScreen}/>
       </Stack.Navigator>
     </NavigationContainer>
 

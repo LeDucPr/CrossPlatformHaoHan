@@ -15,7 +15,6 @@ import fetchCoversDataFromFieldsContrains from '../fetchData/FetchFromFields';
 const { width: Screen_width, height: Screen_height } = Dimensions.get('window');
 
 export default function SearchScreen({ route, navigation }) {
-  const { Datas } = route.params;
   const [isLoading, setIsLoading] = useState(false);
   const [tempSearchQuery, setTempSearchQuery] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
@@ -29,6 +28,7 @@ export default function SearchScreen({ route, navigation }) {
 
   const handleSubmit =() => {
     setSearchQuery(tempSearchQuery);
+    setIsEnterPressed(true);
   }
   const handleKeyPress = (event) => {
     if (event.key === 'Enter') {
@@ -52,7 +52,6 @@ export default function SearchScreen({ route, navigation }) {
             title: searchQuery
           };
           const data = await fetchCoversDataFromFieldsContrains(amountWord, amountCovers, skipIds, fields);
-          console.log(data)
           setBooks(data)
           setIsLoading(false)
         } catch (error) {
@@ -69,7 +68,7 @@ export default function SearchScreen({ route, navigation }) {
       <BackButton navigation={navigation} />
       <View style={styles.parent}>
         <TextInput placeholder='Search' style={styles.searchBox} autoCapitalize='none' autoCorrect={false} value={tempSearchQuery}
-          onChangeText={(query) => handleSearch(query)} onKeyPress={handleKeyPress} onSubmitEditing={handleSubmit} />
+          onChangeText={(query) => handleSearch(query)} onKeyPress={handleKeyPress} onSubmitEditing={handleSubmit} returnKeyType='search'/>
         <TouchableOpacity style={styles.closeButtonParent} onPress={() => { handleSearch(""); setIsEnterPressed(false); }}>
           <Image style={styles.closeButton} source={require("../assets/closeIcon.png")} />
         </TouchableOpacity>

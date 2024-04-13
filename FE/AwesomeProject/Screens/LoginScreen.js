@@ -13,12 +13,12 @@ import { urlHeader } from '../SetUp';
 import WebLogo from '../components/WebLogo';
 import ImageBackground1 from '../components/ImageBackground1';
 import RegisterScreen from './RegisterScreen';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function LoginScreen({ navigation }) {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [isLoggedIn, setIsLoggedIn] = useState(false);
-    const [userData, setUserData] = useState(null);
 
     const handleLogin = async () => {
         try {
@@ -28,18 +28,19 @@ export default function LoginScreen({ navigation }) {
 
             if (response.ok) {
                 if (data.id) { // Kiểm tra nếu tồn tại ID trong dữ liệu trả về từ API
-                    setUserData(data); // Lưu thông tin người dùng vào state
+                    await AsyncStorage.clear(); // Xóa dữ liệu trong AsyncStorage
+                    await AsyncStorage.setItem('userData', JSON.stringify(data)); // Lưu userData vào AsyncStorage
                     setIsLoggedIn(true);
-                    navigation.navigate('MainScreen', { userData });
+                    navigation.navigate('MainScreen');
                 } else {
                     alert('Tên người dùng hoặc mật khẩu không chính xác');
                 }
             } else {
-                throw new Error('Đã xảy ra lỗi khi thực hiện yêu cầu');
+                throw new Error('Tên người dùng hoặc mật khẩu không chính xác');
             }
         } catch (error) {
             console.error('Lỗi:', error);
-            alert('Đã xảy ra lỗi khi thực hiện yêu cầu');
+            alert('Tên người dùng hoặc mật khẩu không chính xác');
         }
     };
 

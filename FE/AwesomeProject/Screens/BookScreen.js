@@ -11,6 +11,7 @@ export default function BookScreen({ route, navigation }) {
     console.log(1)
     await UpdateRating(id);
   };
+  
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <View style={styles.container}>
@@ -35,9 +36,9 @@ export default function BookScreen({ route, navigation }) {
         </View>
         <View style={{ justifyContent: 'flex-end' }}>
           <View style={styles.Botcontainer}>
-            <TouchableOpacity style={{ justifyContent: 'center', alignItems: 'center' }}   onPress={() => handlePress(item.id)}>
+            <TouchableOpacity style={{ justifyContent: 'center', alignItems: 'center' }}>
               <Image style={styles.likeButton} source={require("../assets/like-106.png")} resizeMode='contain' />
-              <Text>{item.reader}</Text>
+              <Text>{item.reader.toString()}</Text>
             </TouchableOpacity>
             <View style={{ justifyContent: 'center', }}>
               <TouchableOpacity style={styles.ReadBtn} onPress={() => navigation.navigate("ReadScreen", { item })}>
