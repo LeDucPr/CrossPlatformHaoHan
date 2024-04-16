@@ -9,5 +9,6 @@ namespace ApiTruyenLau.Services.Interfaces
 	{
 		public Task<UserCvt.ClientReadedCvt> GetReadedById(string clientId);
 		public Task UpdateClientReadedId(string clientId, string boolId);
+		public Task UpdateSuggestions(string clientId, int suggestAmount = 5);
 	}
 }

@@ -32,7 +32,13 @@ namespace ApiTruyenLau.Controllers
 		[HttpPost("UpdateBookIdsByClientId/{clientId}/{bookId}")]
 		public async Task<ActionResult> UpdateBookIdsByClientId(string clientId, string bookId)
 		{
-			try { await _clientServices.UpdateClientReadedId(clientId, bookId); return Ok("Cập nhật sách đã đọc thành công."); }
+			try
+			{
+				await _clientServices.UpdateClientReadedId(clientId, bookId);
+				// Gợi ý truyện tiếp cho phép treo máy cập nhật đẻ không làm chậm response
+				_ = Task.Run(() => _clientServices.UpdateSuggestions(clientId)); 
+				return Ok("Cập nhật sách đã đọc thành công.");
+			}
 			catch (Exception ex) { return Ok(ex.Message); }
 		}
 
