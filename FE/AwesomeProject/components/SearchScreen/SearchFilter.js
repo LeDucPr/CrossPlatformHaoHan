@@ -12,7 +12,7 @@ export default function SearchFilter({ navigation, data, input, setInput, loadin
     if (loadingState) {
       timeoutId = setTimeout(() => {
         setNotFound(true);
-      }, 5000); // 10 giây
+      }, 10000); // 10 giây
     }
     return () => {
       clearTimeout(timeoutId);
