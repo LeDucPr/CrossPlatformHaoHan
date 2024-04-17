@@ -18,7 +18,7 @@ export default function AppNavigator() {
   return (
     <Stack.Navigator screenOptions={{
         headerShown: false,
-      }} initialRouteName='UserScreen'>
+      }} initialRouteName='LoginScreen'>
         <Stack.Screen name="MainScreen" component={MainScreen} />
         <Stack.Screen name="DashBoard" component={DashBoardScreen}  />   
         <Stack.Screen name="LoginScreen" component={LoginScreen}  />

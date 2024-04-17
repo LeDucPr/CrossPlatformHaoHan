@@ -11,16 +11,17 @@ import { useEffect, useState } from 'react';
 import CreateNewAccount from '../fetchData/CreatNewAccount';
 import WebLogo from '../components/WebLogo';
 
-const RegistersScreen = (navigations) => {
+const RegistersScreen = (navigation) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [email, setEmail] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
-  const handleRegister = () => {
+  const handleRegister = async () => {
     if (password === confirmPassword) {
       // Mật khẩu và xác nhận mật khẩu giống nhau
-      CreateNewAccount(username, password, email);
+      await CreateNewAccount(username, password, email);
+      navigation.navigate("LoginScreen");
     } else {
       // Mật khẩu và xác nhận mật khẩu không giống nhau
       console.log("Password and Confirm Password do not match");
@@ -64,7 +65,7 @@ const RegistersScreen = (navigations) => {
               secureTextEntry={true}
               onChangeText={text => setConfirmPassword(text)}
             />
-            <TouchableOpacity onPress={() => handleRegister()} style={styles.button}>
+            <TouchableOpacity onPress={handleRegister} style={styles.button}>
               <Text style={styles.loginTxt}>Submit</Text>
             </TouchableOpacity>
           </View>
