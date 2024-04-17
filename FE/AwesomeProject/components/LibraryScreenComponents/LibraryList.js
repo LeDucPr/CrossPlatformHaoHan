@@ -1,7 +1,7 @@
 import { Text, SafeAreaView, StyleSheet, View, FlatList, Image, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { useEffect, useState } from 'react';
 
-export default function SearchFilter({ navigation, data, input, setInput, loadingState }) {
+export default function LibraryList({ navigation, data, loadingState }) {
   const [isLoading, setIsLoading] = useState(loadingState);
   const [notFound, setNotFound] = useState(false);
   useEffect(() => {
@@ -12,7 +12,7 @@ export default function SearchFilter({ navigation, data, input, setInput, loadin
     if (loadingState) {
       timeoutId = setTimeout(() => {
         setNotFound(true);
-      }, 5000); // 10 giây
+      }, 10000); // 10 giây
     }
     return () => {
       clearTimeout(timeoutId);
@@ -27,19 +27,6 @@ export default function SearchFilter({ navigation, data, input, setInput, loadin
         <Text>Không tìm thấy</Text>
       ) : (
         <FlatList data={data}  showsVerticalScrollIndicator={false} renderItem={({ item }) => {
-          if (input === "") {
-            return (
-              <View>
-                {/* <Image source ={item.img} style = {styles.image} resizeMode='contain'/>
-                        <View styles ={{flex:0.6, height : 130, backgroundColor:'black'}}>
-                            <Text style = {styles.textName}>{item.title}</Text>
-                            <Text style ={styles.textAuthor}>{item.author}</Text>
-                        </View> */}
-                <Text>Không tìm thấy truyện</Text>
-              </View>
-            )
-          }
-          if (item.title.toLowerCase().replace(/[+=\-()&*%#@!:]/g, '').match(/\b\w+\b/g).some(word => input.toLowerCase().includes(word))) {
             return (
               <TouchableOpacity onPress={() => navigation.navigate("BookScreen", { item })}>
                 <View style={styles.itemContainer}>
@@ -51,7 +38,6 @@ export default function SearchFilter({ navigation, data, input, setInput, loadin
                 </View>
               </TouchableOpacity>
             )
-          }
         }} />
       )}
     </View>

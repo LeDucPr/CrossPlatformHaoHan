@@ -8,36 +8,39 @@ import {
     ImageBackground,
     SafeAreaView
 } from 'react-native';
+import { urlHeader } from '../SetUp';
 
 import WebLogo from '../components/WebLogo';
 import ImageBackground1 from '../components/ImageBackground1';
 import RegisterScreen from './RegisterScreen';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function LoginScreen({ navigation }) {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [isLoggedIn, setIsLoggedIn] = useState(false);
-    const [userData, setUserData] = useState(null);
 
     const handleLogin = async () => {
         try {
-            const response = await fetch('https://localhost:7188/Client?userName=' + username + '&password=' + password);
+            const response = await fetch(`${urlHeader}/Client/SignIn/` + username + '/' + password);
             const data = await response.json();
+            console.log(data);
 
             if (response.ok) {
                 if (data.id) { // Kiểm tra nếu tồn tại ID trong dữ liệu trả về từ API
-                    setUserData(data); // Lưu thông tin người dùng vào state
+                    await AsyncStorage.clear(); // Xóa dữ liệu trong AsyncStorage
+                    await AsyncStorage.setItem('userData', JSON.stringify(data)); // Lưu userData vào AsyncStorage
                     setIsLoggedIn(true);
                     navigation.navigate('MainScreen');
                 } else {
                     alert('Tên người dùng hoặc mật khẩu không chính xác');
                 }
             } else {
-                throw new Error('Đã xảy ra lỗi khi thực hiện yêu cầu');
+                throw new Error('Tên người dùng hoặc mật khẩu không chính xác');
             }
         } catch (error) {
             console.error('Lỗi:', error);
-            alert('Đã xảy ra lỗi khi thực hiện yêu cầu');
+            alert('Tên người dùng hoặc mật khẩu không chính xác');
         }
     };
 

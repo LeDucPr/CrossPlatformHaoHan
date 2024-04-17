@@ -13,12 +13,14 @@ import MainScreenTop from '../components/MainScreenComponents/MaiScreenTop';
 import BooksList from '../components/BookScreenComponent/BooksList';
 import BottomBar from '../components/BottomBar';
 import fetchIntroData from '../fetchData/FetchCoverById';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const { width: Screen_width, height: Screen_height } = Dimensions.get('window');
 
-export default function MainScreen({ navigation }) {
+export default function MainScreen({navigation }) {
   const [introDatas, setIntroData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -33,7 +35,7 @@ export default function MainScreen({ navigation }) {
   }, []);
   return (
     <SafeAreaView style={styles.container}>
-      <MainScreenTop navigation={navigation} Datas={introDatas} />
+      <MainScreenTop navigation={navigation}/>
       <ScrollView>
         <Slider navigation={navigation} datas={introDatas} loadingState={isLoading} />
         <BooksList navigation={navigation} datas={introDatas} name={'Daily Picks'} loadingState={isLoading} />

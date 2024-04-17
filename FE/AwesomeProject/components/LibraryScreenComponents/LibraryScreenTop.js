@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 
 
 
-export default function MaiScreenTop({navigation}) {
+export default function LibraryScreenTop({navigation}) {
   return (
     <View style = {styles.container}>
         <View style = {styles.TopSection}>
@@ -12,15 +12,7 @@ export default function MaiScreenTop({navigation}) {
         </View>
         <View style = {styles.BotSection}>
           <View style ={{justifyContent: 'center'}}>
-            <Text style = {{fontSize:26, fontWeight:500, }}>Discover</Text>
-          </View>
-          <View style = {{ justifyContent:'center', flexDirection: 'row'}}>
-            <TouchableOpacity style = {{ justifyContent:'center',}}>
-              <Image source={require('../../assets/ToggleNightMode.png')} style={styles.icon} reszieMode = 'contain' />
-            </TouchableOpacity>
-            <TouchableOpacity style = {{ justifyContent:'center'}} onPress={() => navigation.navigate("Search")}>
-              <Image source={require('../../assets/SearchLogo.png')} style = {styles.icon} reszieMode = 'contain'/>
-            </TouchableOpacity>
+            <Text style = {{fontSize:26, fontWeight:500, }}>Library</Text>
           </View>
         </View>
     </View>

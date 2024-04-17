@@ -11,11 +11,12 @@ export default function BookScreen({ route, navigation }) {
     console.log(1)
     await UpdateRating(id);
   };
+  
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <View style={styles.container}>
         <View style={styles.image}>
-          <ImageBackground source={item.coverComicImagePngStrings[0]} resizeMode="cover" style={{ flex: 1, width: "100%" }}>
+          <ImageBackground source={{uri: item.coverComicImagePngStrings[0]}} resizeMode="cover" style={{ flex: 1, width: "100%" }}>
             <View style={styles.backConainer}>
               <BackButton navigation={navigation} />
             </View>
@@ -35,9 +36,9 @@ export default function BookScreen({ route, navigation }) {
         </View>
         <View style={{ justifyContent: 'flex-end' }}>
           <View style={styles.Botcontainer}>
-            <TouchableOpacity style={{ justifyContent: 'center', alignItems: 'center' }}   onPress={() => handlePress(item.id)}>
+            <TouchableOpacity style={{ justifyContent: 'center', alignItems: 'center' }}>
               <Image style={styles.likeButton} source={require("../assets/like-106.png")} resizeMode='contain' />
-              <Text>{item.rating}</Text>
+              <Text>{item.reader.toString()}</Text>
             </TouchableOpacity>
             <View style={{ justifyContent: 'center', }}>
               <TouchableOpacity style={styles.ReadBtn} onPress={() => navigation.navigate("ReadScreen", { item })}>
@@ -76,7 +77,7 @@ const styles = StyleSheet.create({
   titletext: {
     width: '80%',
     color: '#FFFDFD',
-    fontSize: 30,
+    fontSize: 25,
     fontWeight: 'bold',
   },
   overlay: {

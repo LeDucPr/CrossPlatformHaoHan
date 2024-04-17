@@ -14,7 +14,8 @@ namespace ApiTruyenLau.Objects.Converters.Items
 		public int Part { get; set; }
 		public string Description { get; set; } = null!;
 		public string Language { get; set; } = null!;
-		public List<string>? coverComicImagePngStrings { get; set; } = null!;
+        public int Reader { get; set; }
+        public List<string>? coverComicImagePngStrings { get; set; } = null!;
 		public string? coverTextString { get; set; } = null!;
 		// đánh giá 
 		public string? Rating { get; set; }
@@ -33,6 +34,7 @@ namespace ApiTruyenLau.Objects.Converters.Items
 			coverBookCvt.Genre = book.Genre;
 			coverBookCvt.Page = book.Page;
 			coverBookCvt.Part = book.Part;
+			coverBookCvt.Reader = book.Reader;
 			coverBookCvt.Description = book.Description;
 			coverBookCvt.Language = book.Language;
 			coverBookCvt.coverComicImagePngStrings = coverComicImagePngStrings;
