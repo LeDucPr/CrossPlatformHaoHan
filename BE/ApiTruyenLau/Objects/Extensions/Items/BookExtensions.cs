@@ -152,7 +152,10 @@ namespace ApiTruyenLau.Objects.Extensions.Items
 				string baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
 				directoryPath = Path.Combine(baseDirectory, directoryPath);
 			}
-			string[] imageFiles = Directory.GetFiles(directoryPath).Where(file => IsImage(file)).ToArray();
+			string[] imageFiles = Directory.GetFiles(directoryPath)
+				.Where(file => IsImage(file))
+				.OrderBy(file => int.Parse(Path.GetFileNameWithoutExtension(file)))
+				.ToArray();
 			if (amount != -1 && imageFiles.Length > amount)
 				imageFiles = imageFiles.Take(amount).ToArray();
 			var byteArrays = imageFiles.Select(filePath =>
@@ -181,7 +184,10 @@ namespace ApiTruyenLau.Objects.Extensions.Items
 				string baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
 				directoryPath = Path.Combine(baseDirectory, directoryPath);
 			}
-			string[] imageFiles = Directory.GetFiles(directoryPath).Where(file => IsImage(file)).ToArray();
+			string[] imageFiles = Directory.GetFiles(directoryPath)
+				.Where(file => IsImage(file)).ToArray()
+				.OrderBy(file => int.Parse(Path.GetFileNameWithoutExtension(file)))
+				.ToArray();
 			//if (imageFiles.Length > skipAmount + takeAmount) { }
 			imageFiles = imageFiles.Skip(skipAmount).Take(takeAmount).ToArray(); // bình thường được lấy từ 0, còn theo số lượng thì luôn đếm từ 1
 			return book.ConvertImagesToByteArrays(true, percentSize, quality, imageFiles);
@@ -222,7 +228,10 @@ namespace ApiTruyenLau.Objects.Extensions.Items
 				directoryPath = Path.Combine(baseDirectory, directoryPath);
 				Console.WriteLine(directoryPath);
 			}
-			string[] textFiles = Directory.GetFiles(directoryPath).Where(file => IsText(file)).ToArray();
+			string[] textFiles = Directory.GetFiles(directoryPath)
+				.Where(file => IsText(file)).ToArray()
+				.OrderBy(file => int.Parse(Path.GetFileNameWithoutExtension(file)))
+				.ToArray();
 			if (amount != -1 && textFiles.Length > amount)
 				textFiles = textFiles.Take(amount).ToArray();
 			var textArrays = textFiles.Select(filePath =>

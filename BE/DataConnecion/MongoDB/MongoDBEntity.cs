@@ -88,7 +88,8 @@ namespace DataConnecion.MongoDB
 			}
 
 			var update = Builders<BsonDocument>.Update.Set(updateField, convertedValue);
-			await _collection.UpdateOneAsync(filter, update);
+			var options = new UpdateOptions { IsUpsert = true }; // Tạo mới nếu không tìm thấy
+			await _collection.UpdateOneAsync(filter, update, options);
 		}
 
 

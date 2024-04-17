@@ -18,13 +18,15 @@ namespace ApiTruyenLau.Controllers
 		private readonly IConfiguration _configuration;
 		private IBookServices _bookServices;
 		private IAccountServices _accountServices;
+		private IClientServices _clientServices;
 
-		public BookController(IBookServices bookServices, IAccountServices accountServices, ILogger<ClientController> logger, IConfiguration configuration)
+		public BookController(IBookServices bookServices, IAccountServices accountServices, ILogger<ClientController> logger, IConfiguration configuration, IClientServices clientServices)
 		{
 			_logger = logger;
 			_configuration = configuration;
 			_bookServices = bookServices;
 			_accountServices = accountServices; // cái này cần để lấy theo yêu cầu người dùng 
+			_clientServices = clientServices;
 		}
 
 		#region Phần bìa sách 
@@ -40,6 +42,22 @@ namespace ApiTruyenLau.Controllers
 			{
 				var coverBookCvt = await _bookServices.GetCoverById(bookId);
 				return Ok(coverBookCvt);
+			}
+			catch (Exception ex) { return BadRequest(ex.Message); }
+		}
+
+		/// <summary>
+		/// Lấy các gợi ý nếu người đó đã đọc truyện một vài truyện 
+		/// </summary>
+		/// <param name="clientId"></param>
+		/// <returns></returns>
+		[HttpGet("GetCoversByClientId")]
+		public async Task<ActionResult<List<string>>> GetCoversByClientId(string clientId)
+		{
+			try
+			{
+				var suggestBookIds = await _bookServices.GetCoversByClientIds(clientId);
+				return Ok(suggestBookIds);
 			}
 			catch (Exception ex) { return BadRequest(ex.Message); }
 		}
@@ -92,22 +110,6 @@ namespace ApiTruyenLau.Controllers
 			try
 			{
 				var introBookPartCvt = await _bookServices.GetIntroById(bookId);
-				return Ok(introBookPartCvt);
-			}
-			catch (Exception ex) { return BadRequest(ex.Message); }
-		}
-
-		/// <summary>
-		/// Lấy intros theo id người dùng (tự lấy theo nhu cầu người dùng)
-		/// </summary>
-		/// <param name="userId"></param>
-		/// <returns></returns>
-		[HttpGet("GetIntros")]
-		public async Task<ActionResult<ItemCvt.IntroBookPartCvt>> GetIntros(string userId)
-		{
-			try
-			{
-				var introBookPartCvt = await _bookServices.GetIntros(userId);
 				return Ok(introBookPartCvt);
 			}
 			catch (Exception ex) { return BadRequest(ex.Message); }

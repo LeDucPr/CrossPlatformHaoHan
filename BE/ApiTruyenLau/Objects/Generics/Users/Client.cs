@@ -9,6 +9,7 @@ namespace ApiTruyenLau.Objects.Generics.Users
 		private string _id = null!;
 		private /*I*/Account _account = null!;
 		private List<string> _readedId = null!;
+		private List<string> _suggestedId = null!;
 		private List<IBook> _readed = null!;
 		private List<IBook> _viewed = null!;
 		private List<IBook> _recommend = null!;
@@ -16,6 +17,7 @@ namespace ApiTruyenLau.Objects.Generics.Users
 		public /*I*/Account Account { get { return _account; } set { _account = value; } }
 		public string Id { get; set; } = null!;
 		public List<string> ReadedId { get { return _readedId; } set { _readedId = value; } }
+		public List<string> SuggestedId { get { return _suggestedId; } set { _suggestedId = value; } }
 		// Phần này là tài nguyên nhúng thẳng, giúp tìm truyện nhanh hơn, không cần quan tới việc tìm truyện, làm tăng tốc độ gợi ý 
 		public List<IBook> Readed { get { return _readed; } set { _readed = value; } }  // id truyện đã đọc (được một thời gian)
 		public List<IBook> Viewed { get { return _viewed; } set { _viewed = value; } } // id truyện đã xem (chưa đọc hoặc lướt nhanh)

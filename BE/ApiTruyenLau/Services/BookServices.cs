@@ -1,12 +1,16 @@
 using ApiTruyenLau.Objects.Converters.Items;
 using ApiTruyenLau.Objects.Extensions.Items;
+using ApiTruyenLau.Objects.Generics.Users;
+using ApiTruyenLau.Objects.Interfaces.Users;
 using ApiTruyenLau.Services.Interfaces;
 using DataConnecion.MongoObjects;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using User = ApiTruyenLau.Objects.Generics.Users;
 using Item = ApiTruyenLau.Objects.Generics.Items;
 using ItemCvt = ApiTruyenLau.Objects.Converters.Items;
 using MGDBs = DataConnecion.MongoObjects.CommonObjects;
+using MongoDB.Bson.Serialization.IdGenerators;
 
 
 namespace ApiTruyenLau.Services
@@ -15,7 +19,7 @@ namespace ApiTruyenLau.Services
 	{
 		private readonly IConfiguration _configuration;
 		private MGDBs _DB;
-		private readonly Type[] typeColection = new Type[] { typeof(Item.Book) };
+		private readonly Type[] typeColection = new Type[] { typeof(Item.Book), typeof(User.Client) };
 		public BookServices(IConfiguration configuration)
 		{
 			_configuration = configuration;
@@ -55,6 +59,37 @@ namespace ApiTruyenLau.Services
 					return findedBook?.ToCoverBookCvt()!;
 				}
 				throw new Exception($"không có quyển nào Id là {bookId}");
+			}
+			catch (Exception ex) { throw new Exception(ex.Message); }
+		}
+
+		/// <summary>
+		/// Lấy phần bìa sách theo Id của người đọc
+		/// </summary>
+		/// <param name="clientId"></param>
+		/// <returns></returns>
+		/// <exception cref="NotImplementedException"></exception>
+		/// <exception cref="Exception"></exception>
+		public async Task<List<string>> GetCoversByClientIds(string clientId)
+		{
+			try
+			{
+				var findedClientObjs = await _DB.GetMongoDBEntity(typeof(User.Client)).FindObjects(new Dictionary<string, string>()
+				{{ nameof(User.Client.Id), clientId}});
+				if (findedClientObjs != null && findedClientObjs.Count > 0)
+				{
+					var settings = new JsonSerializerSettings
+					{
+						MissingMemberHandling = MissingMemberHandling.Ignore,
+						SerializationBinder = new MySerializationBinderBook()
+					};
+					User.Client? findedClient = findedClientObjs
+						.Select(obj => JsonConvert.DeserializeObject<User.Client>(JsonConvert.SerializeObject(obj), settings))
+						.ToList().ElementAt(0);
+					if (findedClient != null) { return findedClient.SuggestedId ?? new List<string>(); }
+					throw new NotImplementedException();
+				}
+				throw new Exception($"không có người đọc nào Id là {clientId}");
 			}
 			catch (Exception ex) { throw new Exception(ex.Message); }
 		}
@@ -171,30 +206,6 @@ namespace ApiTruyenLau.Services
 					return findedBook?.ToIntroBookPartCvt()!;
 				}
 				throw new Exception($"không có quyển nào Id là {bookId}");
-			}
-			catch (Exception ex) { throw new Exception(ex.Message); }
-		}
-
-		/// <summary>
-		/// Theo lsy thuyết thì nó phân tích hành vi người dùng và trả về một số bản intro tương ứng với sở thích 
-		/// {Còn hiện tại mấy bố làm Data lâu VL nên thôi cái này tạm thời bỏ qua}
-		/// </summary>
-		/// <returns></returns>
-		/// <exception cref="Exception"></exception>
-		public async Task<ItemCvt.IntroBookPartCvt> GetIntros(string userId) /////////////////////////////// データをすばやく作成します。
-		{
-			try
-			{
-				// Đoạn trên đây lấy Data từ hàm phân tích hành vi các thứ rồi trả về thể loại hay gì đó 
-				// Nếu nhiều hơn một thể loại thì chia thành nhiều Dict hoặc dùng 
-
-				var findedBookObjs = await _DB.GetMongoDBEntity(typeof(Item.Book)).FindObjects(
-					new KeyValuePair<string, List<string>>(
-						nameof(Item.Book.Genre),
-						new List<string>() { "Truyện tranh", "Truyện tranh" }
-					)
-				);
-				throw new Exception("Chưa làm xong");
 			}
 			catch (Exception ex) { throw new Exception(ex.Message); }
 		}
