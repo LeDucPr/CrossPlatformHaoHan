@@ -92,7 +92,7 @@ export default function MainScreen({ navigation }) {
   return (
     <SafeAreaView style={styles.container}>
       <MainScreenTop navigation={navigation} />
-      <ScrollView>
+      <ScrollView style={{paddingBottom: Screen_height*0.05}}>
         <Slider navigation={navigation} datas={introDatas} loadingState={isLoadingIntro} />
         <BooksSuggestionList navigation={navigation} datas={SuggestionDatas} name={'Suggestion'} loadingState={isLoadingSuggest} />
         <BooksList navigation={navigation} datas={introDatas} name={'Daily Picks'} loadingState={isLoadingIntro} />

@@ -1,6 +1,6 @@
-import { Text, SafeAreaView, StyleSheet, View, FlatList, Image, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { Text, SafeAreaView, StyleSheet, View, FlatList, Image, TouchableOpacity, ActivityIndicator, Dimensions } from 'react-native';
 import { useEffect, useState } from 'react';
-
+const { width: Screen_width, height: Screen_height } = Dimensions.get('window');
 export default function LibraryList({ navigation, data, loadingState }) {
   const [isLoading, setIsLoading] = useState(loadingState);
   const [notFound, setNotFound] = useState(false);
@@ -26,7 +26,7 @@ export default function LibraryList({ navigation, data, loadingState }) {
       ) : notFound ? (
         <Text>Không tìm thấy</Text>
       ) : (
-        <FlatList data={data}  showsVerticalScrollIndicator={false} renderItem={({ item }) => {
+        <FlatList data={data}  contentContainerStyle={{ paddingBottom: Screen_height*0.2 }} showsVerticalScrollIndicator={false} renderItem={({ item }) => {
             return (
               <TouchableOpacity onPress={() => navigation.navigate("BookScreen", { item })}>
                 <View style={styles.itemContainer}>

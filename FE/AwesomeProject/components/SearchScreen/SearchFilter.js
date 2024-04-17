@@ -1,6 +1,6 @@
-import { Text, SafeAreaView, StyleSheet, View, FlatList, Image, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { Text, SafeAreaView, StyleSheet, View, FlatList, Image, TouchableOpacity, ActivityIndicator, Dimensions } from 'react-native';
 import { useEffect, useState } from 'react';
-
+const { width: Screen_width, height: Screen_height } = Dimensions.get('window');
 export default function SearchFilter({ navigation, data, input, setInput, loadingState }) {
   const [isLoading, setIsLoading] = useState(loadingState);
   const [notFound, setNotFound] = useState(false);
@@ -26,7 +26,7 @@ export default function SearchFilter({ navigation, data, input, setInput, loadin
       ) : notFound ? (
         <Text>Không tìm thấy</Text>
       ) : (
-        <FlatList data={data}  showsVerticalScrollIndicator={false} renderItem={({ item }) => {
+        <FlatList data={data}  contentContainerStyle={{ paddingBottom: Screen_height*0.2 }}  showsVerticalScrollIndicator={false} renderItem={({ item }) => {
           if (input === "") {
             return (
               <View>
@@ -45,7 +45,7 @@ export default function SearchFilter({ navigation, data, input, setInput, loadin
                 <View style={styles.itemContainer}>
                   <Image source={{ uri: item.coverComicImagePngStrings[0]}} style={styles.image} resizeMode='contain' />
                   <View style={styles.infor}>
-                    <Text style={styles.textName}>{item.title}</Text>
+                    <Text numberOfLines={4} style={styles.textName}>{item.title}</Text>
                     <Text style={styles.textAuthor}>{item.author}</Text>
                   </View>
                 </View>

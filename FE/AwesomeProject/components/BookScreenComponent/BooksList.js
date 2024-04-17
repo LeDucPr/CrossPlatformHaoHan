@@ -19,7 +19,7 @@ export default function BooksList({ navigation, datas, name, loadingState }) {
             {isLoading ? (
                 <ActivityIndicator size="small" color="gray" />
             ) : (
-                <FlatList nestedScrollEnabled data={datas} numColumns={2} renderItem={({ item }) => {
+                <FlatList nestedScrollEnabled data={datas}  numColumns={2} renderItem={({ item }) => {
                     return (
                         <TouchableOpacity onPress={() => {
                             navigation.navigate('BookScreen', { item })
