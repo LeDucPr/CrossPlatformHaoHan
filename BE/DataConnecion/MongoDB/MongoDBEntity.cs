@@ -82,6 +82,9 @@ namespace DataConnecion.MongoDB
 					case TypeCode.Double:
 						convertedValue = Convert.ToDouble(updateValue);
 						break;
+					case TypeCode.String:
+                        convertedValue = (string)updateValue;
+                        break;
 					default:
 						throw new ArgumentException($"Unsupported update value type: {updateValueType}");
 				}
