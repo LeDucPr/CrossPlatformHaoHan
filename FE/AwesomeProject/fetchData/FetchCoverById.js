@@ -1,13 +1,14 @@
 import { urlHeader } from "../SetUp";
+import axios from 'axios';
+import api from '../SetUp/SetUpAxios';
+import {getUserToken} from '../SetUp/GetUserToken';
+import {getUserId} from '../SetUp/GetUserId';
 
 async function fetchDataById(id) {
-    const url = `${urlHeader}/Book/GetCoverById?bookId=${id}`;
     try {
-        const response = await fetch(url);
-        if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-        const data = await response.json();
+        const url = `/Book/GetCoverById?bookId=${id}&`;
+        const response = await api.get(url);
+        const data = await response.data;
         return data;
     } catch (error) {
         console.error('Error fetching data:', error);
@@ -24,11 +25,12 @@ export default async function fetchIntroData(quantity) {
     });
     const fetchPromises = ids.map((id) => fetchDataById(id, 0));
     try {
-        const introData = await Promise.all(fetchPromises);
+        const introData = await axios.all(fetchPromises);
 
         return introData;
     } catch (error) {
         console.error('Error fetching intro data:', error);
+        alert('Không tải được dữ liệu từ server');
         throw error;
     }
 }

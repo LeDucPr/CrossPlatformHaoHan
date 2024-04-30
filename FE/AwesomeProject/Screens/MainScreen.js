@@ -17,7 +17,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import BooksSuggestionList from '../components/BookScreenComponent/BooksSuggestionList';
 import getUserSuggestion from '../fetchData/FetchClientSuggestionBook';
 import fetchCoverDatas from '../fetchData/FetchCoverByListId';
-
+import { booksDefault } from '../SetUp';
 const { width: Screen_width, height: Screen_height } = Dimensions.get('window');
 
 export default function MainScreen({ navigation }) {
@@ -31,7 +31,7 @@ export default function MainScreen({ navigation }) {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const data = await fetchIntroData(8);
+        const data = await fetchIntroData(booksDefault);
         setIntroData(data);
         setIsLoadingIntro(false);
       } catch (error) {
@@ -58,13 +58,14 @@ export default function MainScreen({ navigation }) {
 
 
   useEffect(() => {
-
     const fetchData = async () => {
       if (userData) {
         try {
           const ListSuggestionBookId = await getUserSuggestion(userData.id);
-          console.log(ListSuggestionBookId)
-          setSuggestionBookIds(ListSuggestionBookId)
+          const uniqueData = ListSuggestionBookId.filter((value, index, self) => {
+            return self.indexOf(value) === index;
+          });
+          setSuggestionBookIds(uniqueData)
         } catch (error) {
           console.error('Error fetching intro data:', error);
         }

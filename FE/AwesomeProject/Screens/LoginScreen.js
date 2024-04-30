@@ -24,8 +24,6 @@ export default function LoginScreen({ navigation }) {
         try {
             const response = await fetch(`${urlHeader}/Client/SignIn/` + username + '/' + password);
             const data = await response.json();
-            console.log(data);
-
             if (response.ok) {
                 if (data.id) { // Kiểm tra nếu tồn tại ID trong dữ liệu trả về từ API
                     await AsyncStorage.clear(); // Xóa dữ liệu trong AsyncStorage
