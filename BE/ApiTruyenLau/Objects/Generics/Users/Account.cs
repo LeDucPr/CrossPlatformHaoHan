@@ -7,6 +7,7 @@ namespace ApiTruyenLau.Objects.Generics.Users
 	public class Account : IAccount, IEquatable<Account>
 	{
 		public string UserName { get { return userName; } set { userName = value; } }
+		public string Token { get { return token; } set { token = value; } }
 		public string Password { get { return password; } set { password = value; } }
 		public string Email { get { return email; } set { email = value; } }
 		public string FirstName { get { return firstName; } set { firstName = value; } }
@@ -15,6 +16,7 @@ namespace ApiTruyenLau.Objects.Generics.Users
 		public DateTime LastLoginDate { get { return lastLoginDate; } set { lastLoginDate = value; } }
 		public DateTime CreateDate { get { return createDate; } set { createDate = value; } }
 		private string userName = string.Empty;
+		private string token = string.Empty;
 		private string password = string.Empty;
 		private string email = string.Empty;
 		private string firstName = string.Empty;
