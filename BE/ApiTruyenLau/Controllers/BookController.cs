@@ -77,8 +77,8 @@ namespace ApiTruyenLau.Controllers
             try
             {
                 bool tkComparation = await _securityServices.Compare(userId, token);
-                var introBookPartCvts = await _bookServices.GetCoversByFieldsEquals(pbc.AmountCovers, pbc.SkipIds, pbc.Fields);
-                return Ok(introBookPartCvts);
+                var coverBookPartCvts = await _bookServices.GetCoversByFieldsEquals(pbc.AmountCovers, pbc.SkipIds, pbc.Fields);
+                return Ok(coverBookPartCvts);
             }
             catch (Exception ex) { return BadRequest(ex.Message); }
         }
@@ -91,14 +91,50 @@ namespace ApiTruyenLau.Controllers
         /// <param name="amountWords">thông số này không qua tâm khi chỉ lấy ra theo letter (true)</param>
         /// <returns></returns>
         [HttpPut("GetCoversByFields(Contrains)")]
-        public async Task<ActionResult<List<ItemCvt.CoverBookCvt>>> GetCoverByFieldsContrains([FromBody] ParamForBookCover pbc, bool LetterTrueWordFalse = true, int amountWords = 1, string userId=null!, string token = null!)
+        public async Task<ActionResult<List<ItemCvt.CoverBookCvt>>> GetCoverByFieldsContrains([FromBody] ParamForBookCover pbc, bool LetterTrueWordFalse = true, int amountWords = 1, string userId = null!, string token = null!)
         {
             try
             {
                 bool tkComparation = await _securityServices.Compare(userId, token);
                 var dictFields = LetterTrueWordFalse ? pbc.FieldsToLetter() : pbc.FieldsToWords(amountWords);
-                var introBookPartCvts = await _bookServices.GetCoversByFieldsContrains(pbc.AmountCovers, pbc.SkipIds, dictFields);
-                return Ok(introBookPartCvts);
+                var coverBookPartCvts = await _bookServices.GetCoversByFieldsContrains(pbc.AmountCovers, pbc.SkipIds, dictFields);
+                return Ok(coverBookPartCvts);
+            }
+            catch (Exception ex) { return BadRequest(ex.Message); }
+        }
+
+        /// <summary>
+        /// Lấy vài quyển sách theo số lượng đọc, ưu tiên lấy theo số lượng đọc nhiều nhất
+        /// </summary>
+        /// <param name="amountCovers"></param>
+        /// <param name="skipIds"></param>
+        /// <returns></returns>
+        [HttpGet("GetCoverByDesReaders")]
+        public async Task<ActionResult<List<ItemCvt.CoverBookCvt>>> GetCoverByDesReaders([FromQuery] int amountCovers, [FromQuery] List<string> skipIds, [FromQuery] string userId, [FromQuery] string token)
+        {
+            try
+            {
+                bool tkComparation = await _securityServices.Compare(userId, token);
+                var coverBookPartCvts = await _bookServices.GetSortedCoversByFields(amountCovers, skipIds, false, nameof(ApiTruyenLau.Objects.Generics.Items.Book.Reader));
+                return Ok(coverBookPartCvts);
+            }
+            catch (Exception ex) { return BadRequest(ex.Message); }
+        }
+
+        /// <summary>
+        /// Lấy vài quyển sách theo ngày xuất bản, ưu tiên ngày gần nhất
+        /// </summary>
+        /// <param name="amountCovers"></param>
+        /// <param name="skipIds"></param>
+        /// <returns></returns>
+        [HttpGet("GetCoverByDesPublishDate")]
+        public async Task<ActionResult<List<ItemCvt.CoverBookCvt>>> GetCoverByDesPublishDate([FromQuery] int amountCovers, [FromQuery] List<string> skipIds, [FromQuery] string userId, [FromQuery] string token)
+        {
+            try
+            {
+                bool tkComparation = await _securityServices.Compare(userId, token);
+                var coverBookPartCvts = await _bookServices.GetSortedCoversByFields(amountCovers, skipIds, false, nameof(ApiTruyenLau.Objects.Generics.Items.Book.PublishDate));
+                return Ok(coverBookPartCvts);
             }
             catch (Exception ex) { return BadRequest(ex.Message); }
         }
@@ -121,6 +157,8 @@ namespace ApiTruyenLau.Controllers
             }
             catch (Exception ex) { return BadRequest(ex.Message); }
         }
+
+
         #endregion Phần intro sách
 
         #region Phần nội dung sách
