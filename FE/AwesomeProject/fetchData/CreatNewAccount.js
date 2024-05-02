@@ -26,7 +26,6 @@ export default async function CreateNewAccount(username, password, email) {
         });
 
         const responseData = await response.json();
-        console.log(responseData);
 
     } catch (error) {
         console.error('Error creating account:', error);

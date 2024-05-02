@@ -7,10 +7,6 @@ const { width: Screen_width, height: Screen_height } = Dimensions.get('window');
 
 export default function BookScreen({ route, navigation }) {
   const { item } = route.params;
-  const handlePress = async (id) => {
-    console.log(1)
-    await UpdateRating(id);
-  };
   
   return (
     <SafeAreaView style={{ flex: 1 }}>

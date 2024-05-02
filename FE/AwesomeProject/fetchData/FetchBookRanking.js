@@ -1,8 +1,12 @@
 import { urlHeader } from "../SetUp";
 import api from '../SetUp/SetUpAxios';
-export default async function getUserLibrary(userId) {
+export default async function fetchBooksRanking(amountCover, skipIds) {
     try {
-        const url = `/Client/GetBookIdsByClientId/${userId}?`;
+        let url = `/Book/GetCoverByDesReaders?amountCovers=${amountCover}&`;
+        if (skipIds && skipIds.length > 0) {
+            const skipIdsString = skipIds.map((id) => `skipIds=${id}`).join('&');
+            url += `${skipIdsString}&`;
+          }
         const response = await api.get(url);
         const data = await response.data;
         return data;

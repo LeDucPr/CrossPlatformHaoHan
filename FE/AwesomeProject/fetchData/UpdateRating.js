@@ -1,17 +1,13 @@
 import { urlHeader } from "../SetUp";
-
+import api from '../SetUp/SetUpAxios';
 export default async function UpdateRating(id) {
-    const url = `${urlHeader}/Book/UpdateBookReader?bookId=${id}`;
     try {
-        const response = await fetch(url, {
-            method: 'POST',
+        const url = `/Book/UpdateBookReader?bookId=${id}&`;
+        const response = await api.post(url, null, {
             headers: {
-                Accept: '*/*',
+              Accept: '*/*',
             },
-        });
-        if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
-        }   
+          });
     } catch (error) {
         console.error('Error fetching data:', error);
         throw error;

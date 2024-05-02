@@ -1,13 +1,9 @@
-import { urlHeader } from "../SetUp";
-
+import api from '../SetUp/SetUpAxios';
 async function fetchDataById(id) {
-    const url = `${urlHeader}/Book/GetCoverById?bookId=${id}`;
     try {
-        const response = await fetch(url);
-        if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-        const data = await response.json();
+        const url = `/Book/GetCoverById?bookId=${id}&`;
+        const response = await api.get(url);
+        const data = await response.data;
         return data;
     } catch (error) {
         console.error('Error fetching data:', error);
@@ -26,6 +22,7 @@ export default async function fetchCoverDatas(ListBookId) {
         return coverData;    
     } catch (error) {
         console.error('Error fetching intro data:', error);
+        alert('Không tải được dữ liệu từ server');
         throw error;
     }
 }

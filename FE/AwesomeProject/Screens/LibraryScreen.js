@@ -18,7 +18,6 @@ export default function LibraryScreen({ navigation }) {
     useEffect(() => {
         const fetchUserData = async () => {
           try {
-            console.log('1');
             const data = await AsyncStorage.getItem('userData');
             if (data) {
               setUserData(JSON.parse(data));
@@ -36,7 +35,10 @@ export default function LibraryScreen({ navigation }) {
             if (userData) {
                 try {
                     const ListBookId = await getUserLibrary(userData.id);
-                    setBookIds(ListBookId);
+                    const uniqueData = ListBookId.filter((value, index, self) => {
+                        return self.indexOf(value) === index;
+                      })
+                    setBookIds(uniqueData);
                 } catch (error) {
                     console.error('Lỗi khi lấy danh sách sách:', error);
                 }
