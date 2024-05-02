@@ -10,6 +10,7 @@ import React, { useRef, useState, useEffect, } from 'react';
 import Slider from '../components/MainScreenComponents/Slider';
 import Datas from '../data';
 import MainScreenTop from '../components/MainScreenComponents/MaiScreenTop';
+import ListTouch from '../components/MainScreenComponents/ListTouch';
 import BooksList from '../components/BookScreenComponent/BooksList';
 import BottomBar from '../components/BottomBar';
 import fetchIntroData from '../fetchData/FetchCoverById';
@@ -18,6 +19,9 @@ import BooksSuggestionList from '../components/BookScreenComponent/BooksSuggesti
 import getUserSuggestion from '../fetchData/FetchClientSuggestionBook';
 import fetchCoverDatas from '../fetchData/FetchCoverByListId';
 import { booksDefault } from '../SetUp';
+import fetchBooksRanking from '../fetchData/FetchBookRanking';
+import { FetchBooksRanking  } from '../app/slices/rankingSlice';
+import { useSelector, useDispatch } from 'react-redux';
 const { width: Screen_width, height: Screen_height } = Dimensions.get('window');
 
 export default function MainScreen({ navigation }) {
@@ -26,8 +30,9 @@ export default function MainScreen({ navigation }) {
   const [isLoadingIntro, setIsLoadingIntro] = useState(true);
   const [isLoadingSuggest, setIsLoadingSuggest] = useState(true);
   const [userData, setUserData] = useState();
-  const [SuggesitonBookIds, setSuggestionBookIds] = useState([])
+  const [SuggesitonBookIds, setSuggestionBookIds] = useState([]);
 
+  
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -55,6 +60,8 @@ export default function MainScreen({ navigation }) {
 
     fetchUserData();
   }, []);
+
+  
 
 
   useEffect(() => {
@@ -95,6 +102,7 @@ export default function MainScreen({ navigation }) {
       <MainScreenTop navigation={navigation} />
       <ScrollView style={{paddingBottom: Screen_height*0.05}}>
         <Slider navigation={navigation} datas={introDatas} loadingState={isLoadingIntro} />
+        <ListTouch navigation = {navigation} />
         <BooksSuggestionList navigation={navigation} datas={SuggestionDatas} name={'Suggestion'} loadingState={isLoadingSuggest} />
         <BooksList navigation={navigation} datas={introDatas} name={'Daily Picks'} loadingState={isLoadingIntro} />
         <BooksList navigation={navigation} datas={introDatas} name={'What You Might Like'} loadingState={isLoadingIntro} />

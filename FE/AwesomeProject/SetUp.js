@@ -4,3 +4,4 @@
 //export const urlHeader = 'http://192.168.0.101:7188'
 export const urlHeader = 'http://192.168.0.101:7188'
 export const booksDefault = 8
+export const amountRankingBooks = 5

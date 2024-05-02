@@ -1,7 +1,12 @@
-import {LogBox} from 'react-native';
+'use client'
+import { LogBox } from 'react-native';
 import React, { useRef, useState, useEffect, } from 'react';
 import { NavigationContainer, DefaultTheme, } from '@react-navigation/native';
 import AppNavigator from './AppNavigator';
+import { store } from './app/store'
+import { Provider } from 'react-redux'
+import ReactDOM from 'react-dom/client'
+
 
 const MyTheme = {
   ...DefaultTheme,
@@ -13,14 +18,21 @@ const MyTheme = {
 };
 export default function App() {
   useEffect(() => {
-    LogBox.ignoreLogs(['VirtualizedLists should never be nested inside plain ScrollViews', "Cannot read property 'scrollToIndex' of undefined","AxiosError: Request failed with status code 400"]);
+    LogBox.ignoreLogs(['VirtualizedLists should never be nested inside plain ScrollViews', "Cannot read property 'scrollToIndex' of undefined", "AxiosError: Request failed with status code 400"]);
   }, []);
+
   return (
-    <NavigationContainer theme={MyTheme}>
-      <AppNavigator />
-    </NavigationContainer>
+    <Provider store={store}>
+      <NavigationContainer theme={MyTheme}>
+        <AppNavigator />
+      </NavigationContainer>
+    </Provider>
   );
 }
+
+const rootElement = document.getElementById('root');
+const root = ReactDOM.createRoot(rootElement);
+root.render(<App />);
 
 
 
