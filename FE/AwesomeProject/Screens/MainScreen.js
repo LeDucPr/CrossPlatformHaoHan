@@ -19,20 +19,16 @@ import BooksSuggestionList from '../components/BookScreenComponent/BooksSuggesti
 import getUserSuggestion from '../fetchData/FetchClientSuggestionBook';
 import fetchCoverDatas from '../fetchData/FetchCoverByListId';
 import { booksDefault } from '../SetUp';
-import fetchBooksRanking from '../fetchData/FetchBookRanking';
-import { FetchBooksRanking  } from '../app/slices/rankingSlice';
 import { useSelector, useDispatch } from 'react-redux';
+import { FetchBooksIdsSuggestion, FetchBooksSuggestion } from '../app/slices/suggestionSlice';
 const { width: Screen_width, height: Screen_height } = Dimensions.get('window');
 
 export default function MainScreen({ navigation }) {
   const [introDatas, setIntroData] = useState([]);
-  const [SuggestionDatas, setSuggestionDatas] = useState([]);
   const [isLoadingIntro, setIsLoadingIntro] = useState(true);
-  const [isLoadingSuggest, setIsLoadingSuggest] = useState(true);
   const [userData, setUserData] = useState();
-  const [SuggesitonBookIds, setSuggestionBookIds] = useState([]);
 
-  
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -61,49 +57,67 @@ export default function MainScreen({ navigation }) {
     fetchUserData();
   }, []);
 
-  
+  const dispatch = useDispatch();
+  const SuggesitonBookIds = useSelector(state => state.suggestionList.ListSuggestionIds);
+  const ListSuggesitonBook = useSelector(state => state.suggestionList.ListSuggestionBooks);
+  const isLoadingSuggest = useSelector(state => state.suggestionList.isLoading);
+  const isFetchAll = useSelector(state => state.suggestionList.isFetchAll);
 
 
   useEffect(() => {
-    const fetchData = async () => {
-      if (userData) {
-        try {
-          const ListSuggestionBookId = await getUserSuggestion(userData.id);
-          const uniqueData = ListSuggestionBookId.filter((value, index, self) => {
-            return self.indexOf(value) === index;
-          });
-          setSuggestionBookIds(uniqueData)
-        } catch (error) {
-          console.error('Error fetching intro data:', error);
-        }
-      }
-    };
-    fetchData();
+    if (userData && !isFetchAll) {
+      dispatch(FetchBooksIdsSuggestion({ clientId: userData.id }))
+    }
+    console.log(userData)
   }, [userData]);
 
   useEffect(() => {
-    const fetchData = async (ListBookId) => {
-        try {
-            const data = await fetchCoverDatas(ListBookId);
-            setSuggestionDatas(data);
-            setIsLoadingSuggest(false);
-        } catch (error) {
-            console.error('Error fetching intro data:', error);
-        }
-    };
-    if (SuggesitonBookIds && SuggesitonBookIds.length > 0) {
-        fetchData(SuggesitonBookIds)
+    if (SuggesitonBookIds && SuggesitonBookIds.length > 0 && isFetchAll) {
+      dispatch(FetchBooksSuggestion());
     }
-}, [SuggesitonBookIds]);
+  }, [SuggesitonBookIds]);
+
+
+  //   useEffect(() => {
+  //     const fetchData = async () => {
+  //       if (userData) {
+  //         try {
+  //           const ListSuggestionBookId = await getUserSuggestion(userData.id);
+  //           const uniqueData = ListSuggestionBookId.filter((value, index, self) => {
+  //             return self.indexOf(value) === index;
+  //           });
+  //           setSuggestionBookIds(uniqueData)
+  //         } catch (error) {
+  //           console.error('Error fetching intro data:', error);
+  //         }
+  //       }
+  //     };
+  //     fetchData();
+  //   }, [userData]);
+
+  //   useEffect(() => {
+  //     const fetchData = async (ListBookId) => {
+  //         try {
+  //             const data = await fetchCoverDatas(ListBookId);
+  //             setSuggestionDatas(data);
+  //             setIsLoadingSuggest(false);
+  //         } catch (error) {
+  //             console.error('Error fetching intro data:', error);
+  //         }
+  //     };
+  //     if (SuggesitonBookIds && SuggesitonBookIds.length > 0) {
+  //         fetchData(SuggesitonBookIds)
+  //     }
+  // }, [SuggesitonBookIds]);
 
 
   return (
     <SafeAreaView style={styles.container}>
       <MainScreenTop navigation={navigation} />
-      <ScrollView style={{paddingBottom: Screen_height*0.05}}>
+      <ScrollView style={{ paddingBottom: Screen_height * 0.05 }}>
         <Slider navigation={navigation} datas={introDatas} loadingState={isLoadingIntro} />
-        <ListTouch navigation = {navigation} />
-        <BooksSuggestionList navigation={navigation} datas={SuggestionDatas} name={'Suggestion'} loadingState={isLoadingSuggest} />
+        <ListTouch navigation={navigation} />
+        <BooksSuggestionList navigation={navigation} datas={ListSuggesitonBook} name={'Suggestion'} loadingState={isLoadingSuggest} />
         <BooksList navigation={navigation} datas={introDatas} name={'Daily Picks'} loadingState={isLoadingIntro} />
         <BooksList navigation={navigation} datas={introDatas} name={'What You Might Like'} loadingState={isLoadingIntro} />
       </ScrollView>

@@ -1,17 +1,25 @@
 import { Text, SafeAreaView, StyleSheet, View, FlatList, Image, TouchableOpacity, ActivityIndicator, Dimensions } from 'react-native';
 import { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { setReachEndTrue } from '../../app/slices/rankingSlice';
+import { setReachEndTrueRanking } from '../../app/slices/rankingSlice';
+import { setReachEndTrueNew } from '../../app/slices/newSlice';
+import ScreenTop from './ScreenTop';
+import BackButton from '../BackButton';
+import BottomBar from '../BottomBar';
 const { width: Screen_width, height: Screen_height } = Dimensions.get('window');
-export default function ListBooks({ navigation, data, loadingState }) {
+export default function ListBooks({ navigation, name, data, loadingState, isEndReached }) {
     const dispatch = useDispatch()
     const [isLoading, setIsLoading] = useState(loadingState);
     const [notFound, setNotFound] = useState(false);
-    const isEndReached = useSelector(state => state.rankingList.isReachEnd);
 
     const handleEndReached = () => {
         if (!isEndReached) {
-            dispatch(setReachEndTrue())
+            if (name == 'Ranking') {
+                dispatch(setReachEndTrueRanking())
+            }
+            if (name == 'New') {
+                dispatch(setReachEndTrueNew())
+            }
         }
     };
 
@@ -37,14 +45,19 @@ export default function ListBooks({ navigation, data, loadingState }) {
     );
 
     return (
-        <View style={{ marginTop: 10 }}>
+        <View style={{ flex: 1, marginTop: 10 }}>
+            {/* <BackButton/> */}
             {isLoading && !notFound ? (
                 <ActivityIndicator size="large" color="gray" />
             ) : notFound ? (
                 <Text>Không tìm thấy</Text>
             ) : (
                 <FlatList data={data}
-                    contentContainerStyle={{ paddingBottom: Screen_height * 0.05 }}
+                    // style={{ flex: 1 }}
+                    contentContainerStyle={{
+                        paddingBottom: Screen_height * 0.05,
+                        paddingTop: 10,
+                    }}
                     showsVerticalScrollIndicator={false}
                     renderItem={({ item }) => {
                         return (
@@ -61,8 +74,8 @@ export default function ListBooks({ navigation, data, loadingState }) {
                     }}
                     onEndReached={handleEndReached}
                     onEndReachedThreshold={0.1}
-                    ListFooterComponent={isEndReached ? renderLoadingIndicator : null} 
-                    />
+                    //ListFooterComponent={isEndReached ? renderLoadingIndicator : null} 
+                />
             )}
         </View>
     );

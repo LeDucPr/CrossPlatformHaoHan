@@ -8,8 +8,8 @@ import fetchCoverDatas from '../../fetchData/FetchCoverByListId';
 export const FetchBooksIdsRanking = createAsyncThunk(
     'users/fetchByBookIdStatus',
     async ({ amount, skipIds }) => {
-        const Booksranking = await fetchBooksRanking(amount, skipIds);
-        return Booksranking
+        const BooksrankingIds = await fetchBooksRanking(amount, skipIds);
+        return BooksrankingIds
     },
 )
 
@@ -29,7 +29,7 @@ const initialState = {
     ListRankingIds: [],
     ListRankingBooks: [],
     skipIdslenght: 1,
-    skipIds: [],
+    skipRankingIds: [],
     isLoading: false,
     isReachEnd: true,
     isError: false,
@@ -40,7 +40,7 @@ const rankingSlice = createSlice({
     initialState,
     reducers: {
         // standard reducer logic, with auto-generated action types per reducer
-        setReachEndTrue(state)  {
+        setReachEndTrueRanking(state)  {
             state.isReachEnd = true;
         },
     },
@@ -51,7 +51,7 @@ const rankingSlice = createSlice({
             })
             .addCase(FetchBooksIdsRanking.fulfilled, (state, action) => {
                 state.ListRankingIds = action.payload;
-                state.skipIds = [...state.skipIds, ...action.payload];
+                state.skipRankingIds = [...state.skipRankingIds, ...action.payload];
                 state.skipIdslenght+=5;
                 state.isReachEnd = false;
             })
@@ -72,5 +72,5 @@ const rankingSlice = createSlice({
     },
 })
 
-export const {setReachEndTrue, setReachEndFalse} = rankingSlice.actions
+export const {setReachEndTrueRanking, setReachEndFalse} = rankingSlice.actions
 export default rankingSlice.reducer;

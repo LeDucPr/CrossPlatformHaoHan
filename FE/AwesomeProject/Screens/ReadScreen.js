@@ -5,6 +5,8 @@ import getImagesForBook from '../fetchData/FetchImagesById';
 import UpdateRating from '../fetchData/UpdateRating';
 import UpdateUserLibrary from '../fetchData/UpdateUserLibrary';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { setIsFetchAllFalseLibrary } from '../app/slices/librarySlice';
+import { useSelector, useDispatch } from 'react-redux';
 const { width: Screen_width, height: Screen_height } = Dimensions.get('window');
 
 
@@ -16,6 +18,8 @@ export default function BookScreen({ route, navigation }) {
     const [isLoading, setIsLoading] = useState(false);
     const [isEndReached, setIsEndReached] = useState(false);
     const [userData, setUserData] = useState();
+
+    const dispatch = useDispatch();
 
     const fetchImages = async () => {
         const takeImages = 3;
@@ -63,6 +67,7 @@ export default function BookScreen({ route, navigation }) {
     useEffect(() => {
         if (userData) {
           UpdateUserLibrary(userData.id, item.id);
+          dispatch(setIsFetchAllFalseLibrary())
         }
       }, [userData]);
 

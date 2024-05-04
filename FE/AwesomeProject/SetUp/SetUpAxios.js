@@ -3,7 +3,7 @@ import {getUserToken} from '../SetUp/GetUserToken';
 import {getUserId} from '../SetUp/GetUserId';
 //Tạo axioi với baseURl như dưới
 const api = axios.create({
-  baseURL: 'http://192.168.65.200:7188',
+  baseURL: 'http://192.168.1.200:5142',
 });
 //Xử lý trước khi gửi request, cộng thêm userID với token vào đuổi url
 api.interceptors.request.use(async (config) => {
@@ -12,7 +12,6 @@ api.interceptors.request.use(async (config) => {
   
     if (userId && token) {
       config.url += `userId=${userId}&token=${token}`;
-      
     }
   
     return config;

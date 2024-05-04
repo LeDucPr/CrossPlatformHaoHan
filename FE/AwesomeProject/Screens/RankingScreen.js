@@ -6,7 +6,7 @@ import ScreenTop from '../components/SharedMainScreenComponents/ScreenTop';
 import { useSelector, useDispatch } from 'react-redux';
 import { FetchBooksIdsRanking, FetchBooksRanking } from '../app/slices/rankingSlice';
 import { setReachEndFalse } from '../app/slices/rankingSlice';
-import {amountRankingBooks } from '../SetUp';
+import { amountRankingBooks } from '../SetUp';
 const { width: Screen_width, height: Screen_height } = Dimensions.get('window');
 
 
@@ -14,7 +14,7 @@ export default function RankngScreen({ navigation }) {
     const dispatch = useDispatch();
     const ListBooksRankingIds = useSelector(state => state.rankingList.ListRankingIds);
     const ListRankingBooks = useSelector(state => state.rankingList.ListRankingBooks);
-    const skipIds = useSelector(state => state.rankingList.skipIds);
+    const skipIds = useSelector(state => state.rankingList.skipRankingIds);
     const skipIdslenght = useSelector(state => state.rankingList.skipIdslenght);
     const isLoading = useSelector(state => state.rankingList.isLoading);
     const isEndReached = useSelector(state => state.rankingList.isReachEnd);
@@ -26,10 +26,7 @@ export default function RankngScreen({ navigation }) {
     }, [skipIds, skipIdslenght, isEndReached]);
 
     useEffect(() => {
-        if (ListBooksRankingIds && ListBooksRankingIds.length > 0) {
-            console.log(ListBooksRankingIds);
-            console.log(skipIds)
-            console.log(skipIdslenght)
+        if (ListBooksRankingIds && ListBooksRankingIds.length > 0 && ListRankingBooks.length < skipIds.length) {
             dispatch(FetchBooksRanking());
         }
     }, [ListBooksRankingIds]);
@@ -40,16 +37,16 @@ export default function RankngScreen({ navigation }) {
 
     useEffect(() => {
         console.log(isEndReached)
-    }, [ListRankingBooks]);
+    }, [isEndReached]);
 
 
     return (
         <SafeAreaView style={styles.container}>
-            <ScreenTop navigation={navigation} Name={'Ranking'} />
-            <ScrollView>
-                <ListBooks navigation={navigation} data={ListRankingBooks} loadingState={isLoading} />
-            </ScrollView>
-            <BottomBar navigation={navigation} />
+            <View style={{ flex: 1 }}>
+                <ScreenTop navigation={navigation} Name={'Ranking'} />
+                <ListBooks navigation={navigation} name= {'Ranking'} data={ListRankingBooks} loadingState={isLoading} isEndReached={isEndReached} />
+                <BottomBar navigation={navigation} />
+            </View>
         </SafeAreaView>
     );
 }
@@ -57,8 +54,6 @@ export default function RankngScreen({ navigation }) {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        width: Screen_width,
-        height: Screen_height,
         backgroundColor: '#FFFDFD'
-    }
+    },
 });

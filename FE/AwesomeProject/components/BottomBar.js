@@ -5,7 +5,7 @@ const { width: Screen_width, height: Screen_height } = Dimensions.get('window');
 
 export default function BottomBar({ navigation }) {
     return (
-        <View style={{ flex: 1, justifyContent: 'flex-end' }}>
+        <View style={{ justifyContent: 'flex-end',height: Screen_height * 0.07, }}>
             <View style={styles.container}>
                 <TouchableOpacity style={{ justifyContent: 'center' }} onPress={() => navigation.navigate("MainScreen")}>
                     <Text>Main</Text>
@@ -22,7 +22,6 @@ export default function BottomBar({ navigation }) {
 }
 const styles = StyleSheet.create({
     container: {
-        height: Screen_height * 0.07,
         flexDirection: 'row',
         justifyContent: 'space-around',
         alignContent: 'center',

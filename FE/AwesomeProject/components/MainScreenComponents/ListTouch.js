@@ -8,7 +8,7 @@ export default function ListTouch({navigation}) {
   return (
     <View style = {styles.container}>
        <View style = {{ justifyContent:'space-around', flexDirection: 'row'}}>
-            <TouchableOpacity style = {{ justifyContent:'center',}}>
+            <TouchableOpacity style = {{ justifyContent:'center',}} onPress={() => navigation.navigate("NewScreen")}>
               <Image source={require('../../assets/newicon.png')} style={styles.icon} reszieMode = 'contain' />
             </TouchableOpacity>
             <TouchableOpacity style = {{ justifyContent:'center'}} onPress={() => navigation.navigate("RankingScreen")}>
