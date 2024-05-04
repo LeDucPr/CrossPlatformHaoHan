@@ -27,7 +27,7 @@ namespace ApiTruyenLau.Controllers
 
 
         [HttpGet("GetBookIdsByClientId/{clientId}")]
-        public async Task<ActionResult<List<string>>> GetBookIdsByClientId(string clientId, string userId, string token)
+        public async Task<ActionResult<List<string>>> GetBookIdsByClientId(string clientId, [FromHeader] string userId, [FromHeader] string token)
         {
             bool tkComparation = await _securityServices.Compare(userId, token);
             var clientReadedCvt = await _clientServices.GetReadedById(clientId);
@@ -35,7 +35,7 @@ namespace ApiTruyenLau.Controllers
         }
 
         [HttpPost("UpdateBookIdsByClientId/{clientId}/{bookId}")]
-        public async Task<ActionResult> UpdateBookIdsByClientId(string clientId, string bookId, string userId, string token)
+        public async Task<ActionResult> UpdateBookIdsByClientId(string clientId, string bookId, [FromHeader] string userId, [FromHeader] string token)
         {
             try
             {
