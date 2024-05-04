@@ -38,7 +38,7 @@ namespace ApiTruyenLau.Controllers
         /// <param name="bookId"></param>
         /// <returns></returns>
         [HttpGet("GetCoverById")]
-        public async Task<ActionResult<ItemCvt.CoverBookCvt>> GetCoverById(string bookId, string userId, string token)
+        public async Task<ActionResult<ItemCvt.CoverBookCvt>> GetCoverById(string bookId, [FromHeader] string userId, [FromHeader] string token)
         {
             try
             {
@@ -55,12 +55,12 @@ namespace ApiTruyenLau.Controllers
         /// <param name="clientId"></param>
         /// <returns></returns>
         [HttpGet("GetCoversByClientId")]
-        public async Task<ActionResult<List<string>>> GetCoversByClientId(string clientId, string userId, string token)
+        public async Task<ActionResult<List<string>>> GetCoversByClientId([FromHeader] string userId, [FromHeader] string token)
         {
             try
             {
                 bool tkComparation = await _securityServices.Compare(userId, token);
-                var suggestBookIds = await _bookServices.GetCoversByClientIds(clientId);
+                var suggestBookIds = await _bookServices.GetCoversByClientIds(userId);
                 return Ok(suggestBookIds);
             }
             catch (Exception ex) { return BadRequest(ex.Message); }
@@ -72,7 +72,7 @@ namespace ApiTruyenLau.Controllers
         /// <param name="pbc"></param>
         /// <returns></returns>
         [HttpPut("GetCoversByFields(Equals)")]
-        public async Task<ActionResult<List<ItemCvt.CoverBookCvt>>> GetCoversByFieldsEquals([FromBody] ParamForBookCover pbc, string userId, string token)
+        public async Task<ActionResult<List<ItemCvt.CoverBookCvt>>> GetCoversByFieldsEquals([FromBody] ParamForBookCover pbc, [FromHeader] string userId, [FromHeader] string token)
         {
             try
             {
@@ -91,7 +91,7 @@ namespace ApiTruyenLau.Controllers
         /// <param name="amountWords">thông số này không qua tâm khi chỉ lấy ra theo letter (true)</param>
         /// <returns></returns>
         [HttpPut("GetCoversByFields(Contrains)")]
-        public async Task<ActionResult<List<ItemCvt.CoverBookCvt>>> GetCoverByFieldsContrains([FromBody] ParamForBookCover pbc, bool LetterTrueWordFalse = true, int amountWords = 1, string userId = null!, string token = null!)
+        public async Task<ActionResult<List<ItemCvt.CoverBookCvt>>> GetCoverByFieldsContrains([FromBody] ParamForBookCover pbc, bool LetterTrueWordFalse = true, int amountWords = 1, [FromHeader] string userId = null!, [FromHeader] string token = null!)
         {
             try
             {
@@ -110,7 +110,7 @@ namespace ApiTruyenLau.Controllers
         /// <param name="skipIds"></param>
         /// <returns></returns>
         [HttpGet("GetCoverByDesReaders")]
-        public async Task<ActionResult<List<ItemCvt.CoverBookCvt>>> GetCoverByDesReaders([FromQuery] int amountCovers, [FromQuery] List<string> skipIds, [FromQuery] string userId, [FromQuery] string token)
+        public async Task<ActionResult<List<ItemCvt.CoverBookCvt>>> GetCoverByDesReaders([FromQuery] int amountCovers, [FromQuery] List<string> skipIds, [FromHeader] string userId, [FromHeader] string token)
         {
             try
             {
@@ -128,7 +128,7 @@ namespace ApiTruyenLau.Controllers
         /// <param name="skipIds"></param>
         /// <returns></returns>
         [HttpGet("GetCoverByDesPublishDate")]
-        public async Task<ActionResult<List<ItemCvt.CoverBookCvt>>> GetCoverByDesPublishDate([FromQuery] int amountCovers, [FromQuery] List<string> skipIds, [FromQuery] string userId, [FromQuery] string token)
+        public async Task<ActionResult<List<ItemCvt.CoverBookCvt>>> GetCoverByDesPublishDate([FromQuery] int amountCovers, [FromQuery] List<string> skipIds, [FromHeader] string userId, [FromHeader] string token)
         {
             try
             {
@@ -147,7 +147,7 @@ namespace ApiTruyenLau.Controllers
         /// <param name="bookId"></param>
         /// <returns></returns>
         [HttpGet("GetIntroById")]
-        public async Task<ActionResult<ItemCvt.IntroBookPartCvt>> GetIntroById(string bookId, string userId, string token)
+        public async Task<ActionResult<ItemCvt.IntroBookPartCvt>> GetIntroById(string bookId, [FromHeader] string userId, [FromHeader] string token)
         {
             try
             {
@@ -157,8 +157,6 @@ namespace ApiTruyenLau.Controllers
             }
             catch (Exception ex) { return BadRequest(ex.Message); }
         }
-
-
         #endregion Phần intro sách
 
         #region Phần nội dung sách
@@ -168,7 +166,7 @@ namespace ApiTruyenLau.Controllers
         /// <param name="bookId"></param>
         /// <returns></returns>
         [HttpGet("GetBookById")]
-        public async Task<ActionResult<ItemCvt.BookCvt>> GetBookById(string bookId, string userId, string token)
+        public async Task<ActionResult<ItemCvt.BookCvt>> GetBookById(string bookId, [FromHeader] string userId, [FromHeader] string token)
         {
             try
             {
@@ -180,7 +178,7 @@ namespace ApiTruyenLau.Controllers
         }
 
         [HttpPost("UpdateBookReader")]
-        public async Task<ActionResult> UpdateRatingBook(string bookId, string userId, string token)
+        public async Task<ActionResult> UpdateRatingBook(string bookId, [FromHeader] string userId, [FromHeader] string token)
         {
             try
             {
@@ -202,7 +200,7 @@ namespace ApiTruyenLau.Controllers
         /// <param name="takeImages"></param>
         /// <returns></returns>
         [HttpGet("GetNextImagesForContent")]
-        public async Task<ActionResult<List<string>>> GetNextImagesForContent(string bookId, int skipImages, int takeImages, string userId, string token)
+        public async Task<ActionResult<List<string>>> GetNextImagesForContent(string bookId, int skipImages, int takeImages, [FromHeader] string userId, [FromHeader] string token)
         {
             try
             {
@@ -221,7 +219,7 @@ namespace ApiTruyenLau.Controllers
         /// <param name="bookCreaterCvts"></param>
         /// <returns></returns>
         [HttpPost("CreateNewBooks")]
-        public async Task<ActionResult<string>> CreateBooks([FromBody] List<ItemCvt.BookCreaterCvt> bookCreaterCvts, string userId, string token)
+        public async Task<ActionResult<string>> CreateBooks([FromBody] List<ItemCvt.BookCreaterCvt> bookCreaterCvts, [FromHeader] string userId, [FromHeader] string token)
         {
             try
             {

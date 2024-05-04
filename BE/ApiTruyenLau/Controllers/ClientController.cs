@@ -26,16 +26,16 @@ namespace ApiTruyenLau.Controllers
         }
 
 
-        [HttpGet("GetBookIdsByClientId/{clientId}")]
-        public async Task<ActionResult<List<string>>> GetBookIdsByClientId(string clientId, string userId, string token)
+        [HttpGet("GetBookIdsByClientId")]// /{clientId}")]
+        public async Task<ActionResult<List<string>>> GetBookIdsByClientId([FromHeader] string userId, [FromHeader] string token)
         {
             bool tkComparation = await _securityServices.Compare(userId, token);
-            var clientReadedCvt = await _clientServices.GetReadedById(clientId);
+            var clientReadedCvt = await _clientServices.GetReadedById(userId);
             return Ok(clientReadedCvt.ReadedId);
         }
 
-        [HttpPost("UpdateBookIdsByClientId/{clientId}/{bookId}")]
-        public async Task<ActionResult> UpdateBookIdsByClientId(string clientId, string bookId, string userId, string token)
+        [HttpPost("UpdateBookIdsByClientId")]// /{clientId}/{bookId}")]
+        public async Task<ActionResult> UpdateBookIdsByClientId(string clientId, string bookId, [FromHeader] string userId, [FromHeader] string token)
         {
             try
             {
@@ -48,8 +48,8 @@ namespace ApiTruyenLau.Controllers
             catch (Exception ex) { return Ok(ex.Message); }
         }
 
-        [HttpGet("SignIn/{userName}/{password}")]
-        public async Task<ActionResult<IEnumerable<UserCvt.ClientInfoCvt>>> SignIn(string userName, string password)
+        [HttpGet("SignIn")] // [HttpGet("SignIn/{userName}/{password}")]
+        public async Task<ActionResult<IEnumerable<UserCvt.ClientInfoCvt>>> SignIn([FromHeader] string userName, [FromHeader] string password)
         {
             try
             {
