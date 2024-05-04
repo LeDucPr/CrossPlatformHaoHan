@@ -38,7 +38,7 @@ namespace ApiTruyenLau.Controllers
         /// <param name="bookId"></param>
         /// <returns></returns>
         [HttpGet("GetCoverById")]
-        public async Task<ActionResult<ItemCvt.CoverBookCvt>> GetCoverById([FromHeader] string bookId, [FromHeader] string userId, [FromHeader] string token)
+        public async Task<ActionResult<ItemCvt.CoverBookCvt>> GetCoverById(string bookId, [FromHeader] string userId, [FromHeader] string token)
         {
             try
             {
@@ -110,7 +110,7 @@ namespace ApiTruyenLau.Controllers
         /// <param name="skipIds"></param>
         /// <returns></returns>
         [HttpGet("GetCoverByDesReaders")]
-        public async Task<ActionResult<List<ItemCvt.CoverBookCvt>>> GetCoverByDesReaders([FromHeader][FromQuery] int amountCovers, [FromHeader][FromQuery] List<string> skipIds, [FromHeader] string userId, [FromHeader] string token)
+        public async Task<ActionResult<List<ItemCvt.CoverBookCvt>>> GetCoverByDesReaders([FromQuery] int amountCovers, [FromQuery] List<string> skipIds, [FromHeader] string userId, [FromHeader] string token)
         {
             try
             {
@@ -128,7 +128,7 @@ namespace ApiTruyenLau.Controllers
         /// <param name="skipIds"></param>
         /// <returns></returns>
         [HttpGet("GetCoverByDesPublishDate")]
-        public async Task<ActionResult<List<ItemCvt.CoverBookCvt>>> GetCoverByDesPublishDate([FromHeader][FromQuery] int amountCovers, [FromHeader][FromQuery] List<string> skipIds, [FromHeader] string userId, [FromHeader] string token)
+        public async Task<ActionResult<List<ItemCvt.CoverBookCvt>>> GetCoverByDesPublishDate([FromQuery] int amountCovers, [FromQuery] List<string> skipIds, [FromHeader] string userId, [FromHeader] string token)
         {
             try
             {
@@ -147,7 +147,7 @@ namespace ApiTruyenLau.Controllers
         /// <param name="bookId"></param>
         /// <returns></returns>
         [HttpGet("GetIntroById")]
-        public async Task<ActionResult<ItemCvt.IntroBookPartCvt>> GetIntroById([FromHeader]string bookId, [FromHeader] string userId, [FromHeader] string token)
+        public async Task<ActionResult<ItemCvt.IntroBookPartCvt>> GetIntroById(string bookId, [FromHeader] string userId, [FromHeader] string token)
         {
             try
             {
@@ -166,7 +166,7 @@ namespace ApiTruyenLau.Controllers
         /// <param name="bookId"></param>
         /// <returns></returns>
         [HttpGet("GetBookById")]
-        public async Task<ActionResult<ItemCvt.BookCvt>> GetBookById([FromHeader]string bookId, [FromHeader] string userId, [FromHeader] string token)
+        public async Task<ActionResult<ItemCvt.BookCvt>> GetBookById(string bookId, [FromHeader] string userId, [FromHeader] string token)
         {
             try
             {
@@ -178,7 +178,7 @@ namespace ApiTruyenLau.Controllers
         }
 
         [HttpPost("UpdateBookReader")]
-        public async Task<ActionResult> UpdateRatingBook([FromHeader] string bookId, [FromHeader] string userId, [FromHeader] string token)
+        public async Task<ActionResult> UpdateRatingBook(string bookId, [FromHeader] string userId, [FromHeader] string token)
         {
             try
             {
@@ -200,7 +200,7 @@ namespace ApiTruyenLau.Controllers
         /// <param name="takeImages"></param>
         /// <returns></returns>
         [HttpGet("GetNextImagesForContent")]
-        public async Task<ActionResult<List<string>>> GetNextImagesForContent([FromHeader] string bookId, [FromHeader] int skipImages, [FromHeader] int takeImages, [FromHeader] string userId, [FromHeader] string token)
+        public async Task<ActionResult<List<string>>> GetNextImagesForContent(string bookId, int skipImages, int takeImages, [FromHeader] string userId, [FromHeader] string token)
         {
             try
             {

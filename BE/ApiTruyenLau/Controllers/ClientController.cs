@@ -35,7 +35,7 @@ namespace ApiTruyenLau.Controllers
         }
 
         [HttpPost("UpdateBookIdsByClientId")]// /{clientId}/{bookId}")]
-        public async Task<ActionResult> UpdateBookIdsByClientId([FromHeader] string clientId, [FromHeader] string bookId, [FromHeader] string userId, [FromHeader] string token)
+        public async Task<ActionResult> UpdateBookIdsByClientId(string clientId, string bookId, [FromHeader] string userId, [FromHeader] string token)
         {
             try
             {
