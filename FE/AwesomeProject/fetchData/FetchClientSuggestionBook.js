@@ -2,7 +2,7 @@ import { urlHeader } from "../SetUp";
 import api from '../SetUp/SetUpAxios';
 export default async function getUserSuggestion(userId) {
     try {
-        const url = `/Book/GetCoversByClientId?clientId=${userId}&`;
+        const url = `/Book/GetCoversByClientId`;
         const response = await api.get(url);
         const data = await response.data;
         const uniqueData = data.filter((value, index, self) => {

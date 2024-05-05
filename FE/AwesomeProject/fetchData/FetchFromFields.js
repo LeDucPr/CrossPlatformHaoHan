@@ -4,7 +4,7 @@ import { getUserId } from '../SetUp/GetUserId';
 import api from '../SetUp/SetUpAxios';
 export default async function fetchCoversDataFromFieldsContrains(amountWord, amountCovers, skipIds, fields) {
   try {
-    const url = `/Book/GetCoversByFields(Contrains)?LetterTrueWordFalse=false&amountWords=${amountWord}&`;
+    const url = `/Book/GetCoversByFields(Contrains)?LetterTrueWordFalse=false&amountWords=${amountWord}`;
     const headers = {
       'accept': 'text/plain',
       'Content-Type': 'application/json'

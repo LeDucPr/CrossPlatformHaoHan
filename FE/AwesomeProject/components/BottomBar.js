@@ -10,6 +10,9 @@ export default function BottomBar({ navigation }) {
                 <TouchableOpacity style={{ justifyContent: 'center' }} onPress={() => navigation.navigate("MainScreen")}>
                     <Text>Main</Text>
                 </TouchableOpacity>
+                <TouchableOpacity style={{ justifyContent: 'center' }} onPress={() => navigation.navigate("GenresScreen")}>
+                    <Text>Genres</Text>
+                </TouchableOpacity>
                 <TouchableOpacity style={{ justifyContent: 'center' }} onPress={() => navigation.navigate("LibraryScreen")}>
                     <Text>Library</Text> 
                 </TouchableOpacity>

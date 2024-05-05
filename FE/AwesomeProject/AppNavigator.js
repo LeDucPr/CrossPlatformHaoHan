@@ -12,6 +12,7 @@ import UserSceen from './Screens/UserScreen';
 import LibraryScreen from './Screens/LibraryScreen';
 import RankngScreen from './Screens/RankingScreen';
 import NewScreen from './Screens/NewScreen';
+import GenresScreen from './Screens/GenresScreen';
 
 
 const Stack = createNativeStackNavigator();
@@ -32,6 +33,7 @@ export default function AppNavigator() {
         <Stack.Screen name="LibraryScreen" component={LibraryScreen}/>
         <Stack.Screen name="RankingScreen" component={RankngScreen}/>
         <Stack.Screen name="NewScreen" component={NewScreen}/>
+        <Stack.Screen name="GenresScreen" component={GenresScreen}/>
       </Stack.Navigator>
   );
 }

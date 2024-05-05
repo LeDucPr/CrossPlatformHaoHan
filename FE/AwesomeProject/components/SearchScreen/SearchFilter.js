@@ -20,7 +20,7 @@ export default function SearchFilter({ navigation, data, input, setInput, loadin
   }, [loadingState]);
 
   return (
-    <View style={{ marginTop: 10 }}>
+    <View style={{ flex: 1, marginTop: 10 }}>
       {isLoading && !notFound ? (
         <ActivityIndicator size="large" color="gray" />
       ) : notFound ? (

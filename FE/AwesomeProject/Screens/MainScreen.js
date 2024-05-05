@@ -68,7 +68,6 @@ export default function MainScreen({ navigation }) {
     if (userData && !isFetchAll) {
       dispatch(FetchBooksIdsSuggestion({ clientId: userData.id }))
     }
-    console.log(userData)
   }, [userData]);
 
   useEffect(() => {

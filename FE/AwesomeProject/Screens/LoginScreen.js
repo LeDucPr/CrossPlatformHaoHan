@@ -22,7 +22,14 @@ export default function LoginScreen({ navigation }) {
 
     const handleLogin = async () => {
         try {
-            const response = await fetch(`${urlHeader}/Client/SignIn/` + username + '/' + password);
+            const headers = new Headers();
+            headers.append('userName', username);
+            headers.append('passWord', password);
+            const options = {
+                method: 'GET',
+                headers: headers
+            };
+            const response = await fetch(`${urlHeader}/Client/SignIn`, options);
             const data = await response.json();
             if (response.ok) {
                 if (data.id) { // Kiểm tra nếu tồn tại ID trong dữ liệu trả về từ API
@@ -49,7 +56,7 @@ export default function LoginScreen({ navigation }) {
                     <WebLogo />
                     <Text style={{ fontSize: 40, color: "white" }}>
                         Login
-                  </Text>
+                    </Text>
                     <View style={styles.formContainer}>
                         <TextInput
                             style={styles.input}

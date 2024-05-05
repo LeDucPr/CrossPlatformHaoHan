@@ -6,7 +6,7 @@ import {getUserId} from '../SetUp/GetUserId';
 
 async function fetchDataById(id) {
     try {
-        const url = `/Book/GetCoverById?bookId=${id}&`;
+        const url = `/Book/GetCoverById?bookId=${id}`;
         const response = await api.get(url);
         const data = await response.data;
         return data;

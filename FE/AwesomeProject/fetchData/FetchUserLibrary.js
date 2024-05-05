@@ -2,7 +2,7 @@ import { urlHeader } from "../SetUp";
 import api from '../SetUp/SetUpAxios';
 export default async function getUserLibrary(userId) {
     try {
-        const url = `/Client/GetBookIdsByClientId/${userId}?`;
+        const url = `/Client/GetBookIdsByClientId`;
         const response = await api.get(url);
         const data = await response.data;
         const uniqueData = data.filter((value, index, self) => {
