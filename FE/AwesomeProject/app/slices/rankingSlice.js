@@ -30,7 +30,7 @@ const initialState = {
     ListRankingBooks: [],
     skipIdslenght: 1,
     skipRankingIds: [],
-    isLoading: false,
+    isLoading: true,
     isReachEnd: true,
     isError: false,
 }

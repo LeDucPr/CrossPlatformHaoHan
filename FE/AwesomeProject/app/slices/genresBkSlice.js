@@ -1,26 +1,27 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
+import fetchBooksGenre from '../../fetchData/FetchBooksGenre';
 import fetchCoversDataFromFieldsContrains from '../../fetchData/FetchFromFields';
 import fetchCoverDatas from '../../fetchData/FetchCoverByListId';
 
+
+export const FetchBooksIdsGenres = createAsyncThunk(
+    'users/fetchByGenresBookIdStatus',
+    async ({ amount, genre, skipIds }) => {
+        const BooksGenreIds = await fetchBooksGenre(amount, genre, skipIds);
+        return BooksGenreIds
+    },
+)
 
 
 export const FetchBooksGenres = createAsyncThunk(
     'users/fetchByGenresBooksStatus',
     async (_, { getState }) => {
-      const state = getState();
-      const genre = state.genreList.Genre
-      const amountWord = genre.length
-      console.log(amountWord)
-      const amountCovers = 9
-      const skipIds = state.genreList.skipIds
-      const fields = {
-        genre : genre
-      };
-      const ListBooksGenres = await fetchCoversDataFromFieldsContrains(amountWord, amountCovers, skipIds, fields)
-      console.log(ListBooksGenres[0])
-      return 1;
+        const state = getState();
+        const BooksGenre = await fetchCoverDatas(state.genreList.ListGenresIds);
+        return BooksGenre;
+        
     }
-  );
+);
 
 
 
@@ -29,11 +30,10 @@ const initialState = {
     Genre: "Action",
     ListGenresIds: [],
     ListGenresBooks: [],
-    isLoading: false,
+    isLoading: true,
     skipIds: [],
     isReachEnd: true,
     isError: false,
-    Test: 0,
 }
 //Tạo Slice từ redux
 const genresSlice = createSlice({
@@ -41,26 +41,43 @@ const genresSlice = createSlice({
     initialState,
     reducers: {
         // standard reducer logic, with auto-generated action types per reducer
-        setIsFetchAllFalseGenres(state)  {
+        setIsFetchAllFalseGenres(state) {
         },
-        setGenre(state, action){
+        setGenre(state, action) {
             state.Genre = action.payload;
-            console.log(state.Genre);
-        }
+            state.ListGenresIds =[];
+            state.ListGenresBooks = [];
+            state.skipIds = [];
+            state.isReachEnd = true;
+            state.isLoading = true;
+        },
+        setReachEndTrueGenre(state)  {
+            state.isReachEnd = true;
+        },
     },
     extraReducers: (builder) => {
         // Add reducers for additional action types here, and handle loading state as needed
         builder
-            .addCase(FetchBooksGenres.pending, (state, action) => {
+            .addCase(FetchBooksIdsGenres.pending, (state, action) => {
+            })
+            .addCase(FetchBooksIdsGenres.fulfilled, (state, action) => {
+                state.ListGenresIds = action.payload;
+                state.skipIds = [...state.skipIds, ...action.payload];
                 state.isReachEnd = false;
             })
+            .addCase(FetchBooksIdsGenres.rejected, (state, action) => {
+            })
+            .addCase(FetchBooksGenres.pending, (state, action) => {
+                state.isError = false
+            })
             .addCase(FetchBooksGenres.fulfilled, (state, action) => {
-                state.Test+=1
+                state.ListGenresBooks = [...state.ListGenresBooks, ...action.payload];
+                state.isLoading = false;
             })
             .addCase(FetchBooksGenres.rejected, (state, action) => {
             })
     },
 })
 
-export const {setGenre} = genresSlice.actions
+export const { setGenre, setReachEndTrueGenre } = genresSlice.actions
 export default genresSlice.reducer;

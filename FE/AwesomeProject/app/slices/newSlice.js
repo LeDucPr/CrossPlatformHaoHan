@@ -30,7 +30,7 @@ const initialState = {
     ListNewbooks: [],
     skipIdslenght: 1,
     skipIds: [],
-    isLoading: false,
+    isLoading: true,
     isReachEnd: true,
     isError: false,
 }

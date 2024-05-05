@@ -31,15 +31,6 @@ export default function RankngScreen({ navigation }) {
         }
     }, [ListBooksRankingIds]);
 
-    useEffect(() => {
-        console.log(ListRankingBooks)
-    }, [ListRankingBooks]);
-
-    useEffect(() => {
-        console.log(isEndReached)
-    }, [isEndReached]);
-
-
     return (
         <SafeAreaView style={styles.container}>
             <View style={{ flex: 1 }}>

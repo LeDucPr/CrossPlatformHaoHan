@@ -12,7 +12,6 @@ api.interceptors.request.use(async (config) => {
 
   if (userId && token) {
     // config.url += `userId=${userId}&token=${token}`;
-    // console.log(token)
     config.headers['userId'] = userId;
     config.headers['token'] = token;
 
