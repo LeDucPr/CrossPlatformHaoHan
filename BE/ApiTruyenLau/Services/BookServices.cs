@@ -11,6 +11,7 @@ using Item = ApiTruyenLau.Objects.Generics.Items;
 using ItemCvt = ApiTruyenLau.Objects.Converters.Items;
 using MGDBs = DataConnecion.MongoObjects.CommonObjects;
 using MongoDB.Bson.Serialization.IdGenerators;
+using System.Linq.Expressions;
 
 
 namespace ApiTruyenLau.Services
@@ -207,6 +208,61 @@ namespace ApiTruyenLau.Services
                     var filteredBooks = sortedBooks.Where(book => !skipIds.Contains(book!.Id)); // Bỏ qua các cuốn sách có Id nằm trong skips
                     var resultBooks = filteredBooks.Take(amountCovers).ToList(); // ít hơn thì lấy tất 
                     return resultBooks.Select(book => book?.Id).ToList()!; // không còn sách thì trả về lỗi hết sách 
+                }
+                throw new Exception("Không có sách nào");
+            }
+            catch (Exception ex) { throw new Exception(ex.Message); }
+        }
+
+        /// <summary>
+        /// Lấy sách theo các trường được sắp xếp và lọc ra các đối tượng cần tìm kiếm 
+        /// </summary>
+        /// <param name="amountCovers"></param>
+        /// <param name="skipIds"></param>
+        /// <param name="bookFields"></param>
+        /// <param name="ascending"></param>
+        /// <param name="sortedBookFields"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public async Task<List<string>> GetSortedCoversByFields(int amountCovers, List<string> skipIds, Dictionary<string, List<string>> bookFields, bool ascending = false, params string[] sortedBookFields)
+        {
+            try
+            {
+                // khả năng cao là bạn nên điền 1 cái vào trong sortedBookFields để tránh lỗi
+                var lowerCaseBookFields = bookFields.ToDictionary(entry => entry.Key.ToLower(), entry => entry.Value);
+                var bookProperties = typeof(Item.Book).GetProperties().ToDictionary(prop => prop.Name.ToLower(), prop => prop.Name);
+                var validBookFields = lowerCaseBookFields
+                    .Where(entry => bookProperties.ContainsKey(entry.Key))
+                    .ToDictionary(entry => bookProperties[entry.Key], entry => entry.Value);
+                var findedBookObjs = await _DB.GetMongoDBEntity(typeof(Item.Book)).FindObjects(validBookFields);
+
+                if (findedBookObjs != null && findedBookObjs.Count > 0)
+                {
+                    var settings = new JsonSerializerSettings
+                    {
+                        MissingMemberHandling = MissingMemberHandling.Ignore,
+                        SerializationBinder = new MySerializationBinderBook()
+                    };
+                    var findedBooks = findedBookObjs
+                        .Select(obj => JsonConvert.DeserializeObject<Item.Book>(JsonConvert.SerializeObject(obj), settings))
+                        .ToList();
+
+                    var filteredBooks = findedBooks.Where(book => !skipIds.Contains(book!.Id)); // Bỏ qua các cuốn sách có Id nằm trong skips
+                    var resultBooks = filteredBooks.Take(amountCovers).ToList(); // ít hơn thì lấy tất 
+                    IOrderedEnumerable<Item.Book> sortedBooks;
+                    if (ascending)
+                    {
+                        sortedBooks = resultBooks.OrderBy(book => book?.GetType().GetProperty(sortedBookFields[0])?.GetValue(book, null))!;
+                        for (int i = 1; i < sortedBookFields.Length; i++)
+                            sortedBooks = sortedBooks.ThenBy(book => book.GetType().GetProperty(sortedBookFields[i])?.GetValue(book, null));
+                    }
+                    else
+                    {
+                        sortedBooks = resultBooks.OrderByDescending(book => book?.GetType().GetProperty(sortedBookFields[0])?.GetValue(book, null))!;
+                        for (int i = 1; i < sortedBookFields.Length; i++)
+                            sortedBooks = sortedBooks.ThenByDescending(book => book.GetType().GetProperty(sortedBookFields[i])?.GetValue(book, null));
+                    }
+                    return sortedBooks.Select(book => book?.Id).ToList()!; 
                 }
                 throw new Exception("Không có sách nào");
             }
