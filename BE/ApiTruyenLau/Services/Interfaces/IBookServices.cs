@@ -11,6 +11,7 @@ namespace ApiTruyenLau.Services.Interfaces
 		public Task<List<ItemCvt.CoverBookCvt>> GetCoversByFieldsEquals(int amountCovers, List<string> skipIds, Dictionary<string, string> bookFields);
 		public Task<List<ItemCvt.CoverBookCvt>> GetCoversByFieldsContrains(int amountCovers, List<string> skipIds, Dictionary<string, List<string>> bookFields);
 		public Task<List<string>> GetSortedCoversByFields(int amountCovers, List<string> skipIds, bool ascending = false, params string[] sortedBookFields);
+		public Task<List<string>> GetSortedCoversByFields(int amountCovers, List<string> skipIds, Dictionary<string, List<string>> bookFields, bool ascending = false, params string[] sortedBookFields);
 		#endregion Phần bìa sách
 
 		#region Phần intro sách
