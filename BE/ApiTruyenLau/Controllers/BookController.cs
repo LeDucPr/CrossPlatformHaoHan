@@ -7,6 +7,7 @@ using UserCvt = ApiTruyenLau.Objects.Converters.Users;
 using ItemCvt = ApiTruyenLau.Objects.Converters.Items;
 using ApiTruyenLau.Objects.Converters.Items;
 using System.ComponentModel.DataAnnotations;
+using System.Reflection;
 
 namespace ApiTruyenLau.Controllers
 {
@@ -122,6 +123,25 @@ namespace ApiTruyenLau.Controllers
         }
 
         /// <summary>
+        /// Lấy ra sách và có chọn lọc theo thể loại truyện
+        /// </summary>
+        /// <param name="amountCovers"></param>
+        /// <param name="title"></param>
+        /// <param name="skipIds"></param>
+        /// <returns></returns>
+        [HttpGet("GetCoverByDesReadersAndGenre")]
+        public async Task<ActionResult<List<ItemCvt.CoverBookCvt>>> GetCoverByDesReadersAndTitles([FromQuery] int amountCovers, [FromQuery] string genre, [FromQuery] List<string> skipIds, [FromHeader] string userId, [FromHeader] string token)
+        {
+            try
+            {
+                bool tkComparation = await _securityServices.Compare(userId, token);
+                var coverBookPartCvts = await _bookServices.GetSortedCoversByFields(amountCovers, skipIds, bookFields: new Dictionary<string, List<string>>() { { "genre", new List<string> { genre } } }, false, nameof(ApiTruyenLau.Objects.Generics.Items.Book.Reader));
+                return Ok(coverBookPartCvts);
+            }
+            catch (Exception ex) { return BadRequest(ex.Message); }
+        }
+
+        /// <summary>
         /// Lấy vài quyển sách theo ngày xuất bản, ưu tiên ngày gần nhất
         /// </summary>
         /// <param name="amountCovers"></param>
@@ -140,11 +160,14 @@ namespace ApiTruyenLau.Controllers
         }
         #endregion Phần bìa sách
 
+
         #region Phần intro sách
         /// <summary>
         /// Lấy phần intro sách theo id sách
         /// </summary>
         /// <param name="bookId"></param>
+        /// <param name="userId"></param>
+        /// <param name="token"></param>
         /// <returns></returns>
         [HttpGet("GetIntroById")]
         public async Task<ActionResult<ItemCvt.IntroBookPartCvt>> GetIntroById(string bookId, [FromHeader] string userId, [FromHeader] string token)
